@@ -1,0 +1,3017 @@
+﻿@using Blo.Properties
+@using Model;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var grid;
+            var pasoFinal = 0;
+            var siguiente = true;
+            var enviar = false;
+            var limpiarWizard = false;
+            var editar = false;
+            var isCampania = false;
+            var gridDirecciones;
+            var gridReferencias;
+            var gridInformacionEco;
+
+            $("#CondIdTasaInteres").hide();
+
+            //Toolbar extra buttons
+            var btnFinish = $('<button id="btnFinal" type ="submit"></button>')
+                .text('Finalizar')
+                .addClass('btn btn-info')
+                .on('click', function () {
+                    if (pasoFinal == 6) {
+                        enviar = true;
+                        return true;
+                    }
+                    else {
+                        alert('Pasos pendientes');
+                        return false;
+                    }
+                });
+
+
+            // Smart Wizard
+            $('#smartwizard').smartWizard({
+                selected: 0,  // Initial selected step, 0 = first step
+                contentCache: false,
+                keyNavigation: false, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+                autoAdjustHeight: true, // Automatically adjust content height
+                cycleSteps: false, // Allows to cycle the navigation of steps
+                backButtonSupport: false, // Enable the back button support
+                useURLhash: false, // Enable selection of the step based on url hash
+                lang: {  // Language variables
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                },
+                toolbarSettings: {
+                    toolbarPosition: 'bottom', // none, top, bottom, both
+                    toolbarButtonPosition: 'right', // left, right
+                    showNextButton: true, // show/hide a Next button
+                    showPreviousButton: true, // show/hide a Previous button
+                    toolbarExtraButtons: [btnFinish]
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    enableAllAnchors: false, // Activates all anchors clickable all times
+                    markDoneStep: true, // add done css
+                    enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+                },
+                contentURL: null, // content url, Enables Ajax content loading. can set as data data-content-url on anchor
+                disabledSteps: [],    // Array Steps disabled
+                errorSteps: [],    // Highlight step with errors
+                theme: 'arrows',
+                transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+                transitionSpeed: '400'
+            });
+
+            $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+
+                $('#formContacto').formValidation('validate');
+                enviar = false;
+
+                return siguiente;
+            });
+            // Initialize the showStep event
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection) {
+
+                $('#formContacto').formValidation('validate');
+                pasoFinal = stepNumber;
+                enviar = false;
+
+                if (pasoFinal == 6) {
+                    $("#btnFinal").show();
+                }
+                else {
+                    $("#btnFinal").hide();
+                }
+
+
+            });
+
+            $("#btnFinal").hide();
+
+            //EVENTO PARA ELIMINAR UN PRODUCTO
+            function RemoveDireccion(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/RemoveDireccion", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                gridDirecciones.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+
+            function RemoveReferencias(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/RemoveReferencia", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                gridReferencias.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+
+            function enviarSolicitud(e) {
+               $("#IdResolicion").val(e.data.record.Id);
+               $("#myModalAnalisis").modal("show");
+            }
+
+            function RemoveInformacionEco(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/RemoveInfoEconomica", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                gridInformacionEco.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+
+             function RemoveAdjuntos(e) {
+                 bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/RemoveAdjuntos", type: "POST", data: { id: e.data.record.Id } })
+                      .done(function (data, textStatus, jqXHR) {
+                          gridAdjuntos.clear();
+                          gridAdjuntos.reload();
+                          Mensajes(data.mensaje);
+                      })
+                      .fail(function (data, textStatus, jqXHR) {
+                          $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                      });
+                    }
+                });
+            }
+
+            function DireccionValida(e) {
+                 bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/DireccionValida", type: "POST", data: { id: e.data.record.Id,valida: e.data.record.Valida } })
+                      .done(function (data, textStatus, jqXHR) {
+                          gridDirecciones.reload();
+                          Mensajes(data.mensaje);
+                      })
+                      .fail(function (data, textStatus, jqXHR) {
+                          $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                      });
+                    }
+                });
+             }
+
+            function ReferenciaValida(e) {
+                 bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/ReferenciaValida", type: "POST", data: { id: e.data.record.Id, valida: e.data.record.Valida } })
+                      .done(function (data, textStatus, jqXHR) {
+                          gridReferencias.reload();
+                          Mensajes(data.mensaje);
+                      })
+                      .fail(function (data, textStatus, jqXHR) {
+                          $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                      });
+                    }
+                });
+            }
+
+            function InformacionEcoValida(e) {
+                 bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../Resolucion/InformacionEcoValida", type: "POST", data: { id: e.data.record.Id, valida: e.data.record.Valida } })
+                      .done(function (data, textStatus, jqXHR) {
+                          gridInformacionEco.reload();
+                          Mensajes(data.mensaje);
+                      })
+                      .fail(function (data, textStatus, jqXHR) {
+                          $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                      });
+                    }
+                });
+            }
+
+            // OPCIONES DE EDITAR DE TODOS LOS GRID
+
+            function EditReferencias(e) {// metodo que es llamado desde el grid del modal
+                //campo oculto
+                //Aqui crar la solicitud de credito o al contado
+                $("#IdContactoReferencias").val(e.data.record.Id); //campos ocultos
+
+                //Texbox
+                $("#RNombres").val(e.data.record.Nombres);
+                $("#RApellidos").val(e.data.record.Apellidos);
+                $("#RParentesco").val(e.data.record.Parentesco);
+                $("#RTelefono").val(e.data.record.Telefono);
+
+                // Combobox
+                $("#RIdTipoReferencia").val(e.data.record.IdTipoReferencia);
+                $("#RIdTipoReferencia").change();
+
+
+                $("#myModalReferencias").modal("show")
+            }
+
+            function EditDireccion(e) {
+                //campo oculto
+                $("#IdContactoDirecciones").val(e.data.record.Id);
+
+                // combobox
+                $("#IdDepartamento").val(e.data.record.IdDepartamento);
+                $("#IdDepartamento").change();
+                $("#IdMunicipio").val(e.data.record.IdMunicipio);
+                $("#IdMunicipio").change();
+                $("#IdTipoVivienda").val(e.data.record.IdTipoVivienda);
+                $("#IdTipoVivienda").change();
+                $("#IdTipoDireccion").val(e.data.record.IdTipoDireccion);
+                $("#IdTipoDireccion").change();
+
+                //Texbox
+                $("#Direccion").val(e.data.record.Direccion);
+                $("#DirReferencia").val(e.data.record.DirReferencia);
+                $("#Comentario").val(e.data.record.Comentario);
+                $("#TiempoResidenciaMeses").val(e.data.record.TiempoResidenciaMeses);
+
+                $("#myModalDirecciones").modal("show")
+            }
+
+            function EditInformacionEco(e) {// metodo que es llamado desde el grid del modal
+                //campo oculto
+                //Aqui crar la solicitud de credito o al contado
+                $("#IdContactoInformacionEco").val(e.data.record.Id);; //campos ocultos
+
+                //Texbox
+
+                $("#ENombre").val(e.data.record.Nombre);
+                $("#EValor").val(e.data.record.Valor);
+                $("#EDescripcion").val(e.data.record.Descripcion);
+
+                // Combobox
+                $("#EIdTipoPropiedad").val(e.data.record.IdTipoPropiedad);
+                $("#EIdTipoPropiedad").change();
+
+
+
+                $("#myModalInformacionEco").modal("show")
+            }
+
+
+            //OPCION DE AGREGAR EN TODOS LOS GRID
+            function AddAdjuntos() {
+                $("#myModalAdjuntos").modal("show");
+            }
+
+            function AddInformacionEco() {
+                //Aqui crar la solicitud de credito o al contado
+                $("#IdContactoInformacionEco").val(""); //campos ocultos
+
+                //Texbox
+                $("#ENombre").val("");
+                $("#EValor").val("");
+                $("#EDescripcion").val("");
+
+                // Combobox
+                $("#EIdTipoPropiedad").val("");
+                $("#EIdTipoPropiedad").change();
+
+                $("#myModalInformacionEco").modal("show")
+            };
+
+            function AddDireccion() {
+                //Aqui crar la solicitud de credito o al contado
+                $("#IdContactoDirecciones").val(""); //campos ocultos
+                //Texbox
+                $("#Direccion").val("");
+                $("#DirReferencia").val("");
+                $("#Comentario").val("");
+                $("#TiempoResidenciaMeses").val("0");
+
+                // Combobox
+                $("#IdDepartamento").val("");
+                $("#IdDepartamento").change();
+                $("#IdMunicipio").val("");
+                $("#IdMunicipio").change();
+                $("#IdTipoVivienda").val("");
+                $("#IdTipoVivienda").change();
+                $("#IdTipoDireccion").val("");
+                $("#IdTipoDireccion").change();
+
+                $("#myModalDirecciones").modal("show")
+            };
+
+            function AddReferencias() {
+                //Aqui crar la solicitud de credito o al contado
+                $("#IdContactoReferencias").val(""); //campos ocultos
+
+                //Texbox
+                $("#RNombres").val("");
+                $("#RApellidos").val("");
+                $("#RParentesco").val("");
+                $("#RTelefono").val("");
+
+                // Combobox
+                $("#RIdTipoReferencia").val("");
+                $("#RIdTipoReferencia").change();
+
+
+
+                $("#myModalReferencias").modal("show")
+            };
+
+            function CrearContacto(e) {
+                //limpiar wizard
+                $('#smartwizard').smartWizard("reset");
+                $('#smartwizard').data('smartWizard')._showStep(1);
+                $('#smartwizard').data('smartWizard')._showStep(2);
+                $('#smartwizard').data('smartWizard')._showStep(3);
+                $('#smartwizard').data('smartWizard')._showStep(4);
+                $('#smartwizard').data('smartWizard')._showStep(5);
+                $('#smartwizard').data('smartWizard')._showStep(6);
+                $('#smartwizard').data('smartWizard')._showStep(0);
+
+                //obtner datos de contacto
+                $.ajax({
+                    url: "../Resolucion/GetDatosContacto", type: "POST",
+                    data: {
+                        IdOportunidad: e.data.record.Id,
+                        IdTipoVenta: e.data.record.IdTipoVenta
+                    }
+                })
+                    .done(function (data, textStatus, jqXHR) {
+
+                        var contacto = data.contacto;
+                        editar = true; // con esto se impide que se ejecuten los eventos change al final se cambia de estado para que siga funcionando
+                        $("#Id").val(contacto.Id);
+
+                        if (data.isCampania) {
+                            isCampania = true;
+                            $("#CondIdMarca").prop("disabled", true);
+                            $("#CondIdNivelPrecio").prop("disabled", true);
+                            $("#CondTipoDescuento").prop("disabled", true);
+
+                            $("#CondTipoDescuento").prop("disabled", true);
+                            $("#CondValorDescuento").prop("disabled", true);
+                            $("#CondPrecioNuevo").prop("disabled", true);
+                            $("#CondTipoPrima").prop("disabled", true);
+                            $("#CondvalorPrima").prop("disabled", true);
+                            $("#CondGarantia").prop("disabled", true);
+                            $("#CondPrimerCuota").prop("disabled", true);
+                        }
+                        else {
+                            isCampania = false;
+                            $("#CondIdMarca").prop("disabled", false);
+                            $("#CondIdNivelPrecio").prop("disabled", false);
+                            $("#CondTipoDescuento").prop("disabled", false);
+
+                            $("#CondTipoDescuento").prop("disabled", false);
+                            $("#CondValorDescuento").prop("disabled", false);
+                            $("#CondPrecioNuevo").prop("disabled", false);
+                            $("#CondTipoPrima").prop("disabled", false);
+                            $("#CondvalorPrima").prop("disabled", false);
+                            $("#CondGarantia").prop("disabled", false);
+                            $("#CondPrimerCuota").prop("disabled", false);
+                        }
+
+                        //carga de productos
+                        $("#CondIdProducto option").remove();
+                        $.each(data.lista, function (key, lista) {
+                            $("#CondIdProducto").append('<option value=' + lista.Id + '>' + lista.InvProductoDes + '</option>');
+                        });
+                        $("#CondIdProducto").val("");
+                        $("#CondIdInvProductoPartes option").remove();
+
+                        //si es una edicion se trata de cargar los datos que estan en la base
+                        if (contacto.Id > 0) {
+                            //seleccion del producto
+                            $("#CondIdProducto").val(contacto.CondIdProducto);
+                            $("#CondIdProducto").change();
+                            $("#CondIdTasaInteres").val(contacto.CondIdTasaInteres);
+                            $("#CondIdTasaInteres").change();
+
+
+                            //carga los chasis del producto
+                            $("#CondIdInvProductoPartes option").remove();
+                            $.each(data.partes, function (key, partes) {
+                                $("#CondIdInvProductoPartes").append('<option value=' + partes.Id + '>' + partes.NumeroParte + '-' + partes.Anio + '</option>');
+                            });
+                            //seleccion del chasis
+                            $("#CondIdInvProductoPartes").val(contacto.CondIdInvProductoPartes);
+                            $("#CondIdInvProductoPartes").change();
+
+                            $("#ValidaCondicionesCred").prop("checked", contacto.ValidaCondicionesCred);
+                            $("#ValidaDatosCliente").prop("checked", contacto.ValidaDatosCliente);
+                            $("#ValidaDatosConyuge").prop("checked", contacto.ValidaDatosConyuge);
+                            $("#ValidaActividadEco").prop("checked", contacto.ValidaActividadEco);
+                        }
+
+
+                        $("#IdOportunidad").val(contacto.IdOportunidad);
+                        $("#IdTipoVenta").val(contacto.IdTipoVenta);
+
+                        if (contacto.EsIndependiente == true) {
+                            $("#Independiente").attr('checked', true);
+                            $("#Independiente").change();
+                        }
+                        else {
+                            $("#Dependiente").attr('checked', true);
+                            $("#Dependiente").change();
+                        }
+
+                        $("#NumeroDependientes").val(contacto.NumeroDependientes);
+                        $("#Nombres").val(contacto.Nombres);
+                        $("#Apellidos").val(contacto.Apellidos);
+                        $("#ConocidoPor").val(contacto.ConocidoPor);
+                        $("#Genero").val(contacto.Genero);
+                        $("#DUI").val(contacto.DUI);
+                        $("#NIT").val(contacto.NIT);
+                        $("#Correo").val(contacto.Correo);
+                        $("#Telefono").val(contacto.Telefono);
+                        $("#Celular").val(contacto.Celular);
+                        $("#FechaNacimiento").val(contacto.FechaNacimiento == "/Date(-62135575200000)/" ? "" : formatDate(contacto.FechaNacimiento, 'dd/mm/yyyy'));
+                        $("#Nacionalidad").val(contacto.Nacionalidad);
+                        $("#IdNivelEducacion").val(contacto.IdNivelEducacion);
+                        $("#IdCiudad").val(contacto.IdCiudad);
+                        $("#IdCiudad").change();
+                        $("#IdNivelEducacion").change();
+                        $("#IdProfesion").val(contacto.IdProfesion);
+                        $("#IdProfesion").change();
+                        $("#IdEstadoCivil").val(contacto.IdEstadoCivil);
+                        $("#IdEstadoCivil").change();
+                        $("#ActNombreEmpresa").val(contacto.ActNombreEmpresa);
+                        $("#ActActividad").val(contacto.ActActividad);
+                        $("#ActIdDepartamento").val(contacto.ActIdDepartamento);
+                        $("#ActIdDepartamento").change();
+                        $("#ActIdMunicipio").val(contacto.ActIdMunicipio);
+                        $("#ActIdMunicipio").change();
+                        $("#ActCalle").val(contacto.ActCalle);
+                        $("#ActPasaje").val(contacto.ActPasaje);
+                        $("#ActColonia").val(contacto.ActColonia);
+                        $("#ActNumeroCasa").val(contacto.ActNumeroCasa);
+                        $("#ActReferenciaUbicacion").val(contacto.ActReferenciaUbicacion);
+
+                        if (contacto.ActIndDeclaraImpuesto == true) {
+                            $("#Si").attr('checked', true);
+                        }
+                        else {
+                            $("#No").attr('checked', true);
+                        }
+                        $("#ActIndAntiguedad").val(contacto.ActIndAntiguedad);
+                        $("#ActIndTipoLocal").val(contacto.ActIndTipoLocal);
+                        $("#ActIndNumeroEmpleados").val(contacto.ActIndNumeroEmpleados);
+                        $("#ActIndTipoSector").val(contacto.ActIndTipoSector);
+                        $("#ActIndCantidadLocales").val(contacto.ActIndCantidadLocales);
+                        $("#ActIndDireccion2").val(contacto.ActIndDireccion2);
+                        $("#ActIndDireccion3").val(contacto.ActIndDireccion3);
+                        $("#ActIndDireccion4").val(contacto.ActIndDireccion4);
+                        $("#ActDepJefe").val(contacto.ActDepJefe);
+                        $("#ActDepFechaIngreso").val(contacto.ActDepFechaIngreso == "/Date(-62135575200000)/" ? "" : formatDate(contacto.ActDepFechaIngreso, 'dd/mm/yyyy'));
+                        $("#ActDepTipoContrato").val(contacto.ActDepTipoContrato);
+                        $("#ActDepTipoSueldo").val(contacto.ActDepTipoSueldo);
+                        $("#ActDepIngresoFijo").val(contacto.ActDepIngresoFijo);
+                        $("#ActDepIngresoVariable").val(contacto.ActDepIngresoVariable);
+                        $("#ActDepDiaPago").val(contacto.ActDepDiaPago);
+                        $("#ActDepFormaPago").val(contacto.ActDepFormaPago);
+                        $("#ActDepCargo").val(contacto.ActDepCargo);
+                        $("#ActDepTelefono").val(contacto.ActDepTelefono);
+                        $("#ActDepCelular").val(contacto.ActDepCelular);
+                        $("#ConyugeNombres").val(contacto.ConyugeNombres);
+                        $("#ConyugeApellidos").val(contacto.ConyugeApellidos);
+                        $("#ConyugeConocidoPor").val(contacto.ConyugeConocidoPor);
+                        $("#ConyugeGenero").val(contacto.ConyugeGenero);
+                        $("#ConyugeGenero").change();
+                        $("#ConyugeEmpresa").val(contacto.ConyugeEmpresa);
+                        $("#ConyugeActividadEmpresa").val(contacto.ConyugeActividadEmpresa);
+                        $("#ConyugeCargoEmpresa").val(contacto.ConyugeCargoEmpresa);
+                        $("#ConyugeTelefonoEmpresa").val(contacto.ConyugeTelefonoEmpresa);
+                        $("#ConyugeIngresoMensual").val(contacto.ConyugeIngresoMensual);
+                        $("#ConyugeFechaIngreso").val(contacto.ConyugeFechaIngreso == "/Date(-62135575200000)/" ? "" : formatDate(contacto.ConyugeFechaIngreso, 'dd/mm/yyyy'));
+                        //paso 1 condición económica
+                        $("#CondIdMarca").val(contacto.CondIdMarca);
+                        $("#CondIdMarca").change();
+                        $("#CondIdProductoAccesorio").val(contacto.CondIdProductoAccesorio);
+                        $("#CondIdProductoAccesorio").change();
+                        $("#CondIdProductoParteServio").val(contacto.CondIdProductoParteServio);
+                        $("#CondIdProductoParteServio").change();
+                        $("#CondIdInvCondicionPago").val(contacto.CondIdInvCondicionPago);
+                        $("#CondIdInvCondicionPago").change();
+                        $("#CondValorDescuento").val(contacto.CondValorDescuento);
+                        $("#CondPrecioActual").val(contacto.CondPrecioActual);
+                        $("#CondPrecioNuevo").val(contacto.CondPrecioNuevo);
+                        $("#CondPrecioNuevo").change();
+                        $("#CondTipoPrima").val(contacto.CondTipoPrima);
+                        $("#CondTipoPrima").change();
+                        $("#CondTipoDescuento").val(contacto.CondTipoDescuento);
+                        $("#CondTipoDescuento").change();
+                        $("#CondvalorPrima").val(contacto.CondvalorPrima);
+                        $("#CondGarantia").val(contacto.CondGarantia);
+                        $("#CondFechaPrimerPago").val(contacto.CondFechaPrimerPago);
+                        $("#CondPrimerCuota").val(contacto.CondPrimerCuota);
+                        $("#CondPrimerCuota").change();
+                        $("#CondMontoCuotas").val(contacto.CondMontoCuotas);
+                        $("#CondMontoFinciado").val(contacto.CondMontoFinciado);
+                        $("#CondMontoFinciado").change();
+                        $("#CondIdNivelPrecio").val(contacto.CondIdNivelPrecio);
+                        $("#CondIdNivelPrecio").change();
+
+                        if (contacto.IdTipoVenta == 2)
+                            $("#myModal").modal("show");
+                        else
+                            alert("Venta al CONTADO en proceso de desarrollo");
+
+                        gridInformacionEco.reload();
+                        gridReferencias.reload();
+                        gridDirecciones.reload();
+                        gridAdjuntos.reload();
+
+                        //habilita los eventos change de cada elemento
+                        editar = false;
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                    });
+
+
+                if (limpiarWizard) {
+                    limpiarWizard = false;
+                }
+            }
+
+            gridDirecciones = $("#gridDireccion").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+
+                columns: [
+
+                    { field: "Departamento", title: "Departamento" },
+                    { field: "Municipio", title: "Municipio" },
+                    { field: "TipoVivienda", title: "Tipo de Vivienda" },
+                    { field: "Valida", title: "Valida", width: 100, events: { "click": DireccionValida } },
+                    { title: "", field: "Edit", width: 42, type: "icon", icon: "glyphicon-pencil btn btn-default btn-xs", tooltip: "Editar", events: { "click": EditDireccion } },
+                    { title: "", field: "Delete", width: 42, type: "icon", icon: "glyphicon-trash btn btn-danger btn-xs", tooltip: "Eliminar", events: { "click": RemoveDireccion } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+            gridDirecciones.on("cellDataBound", function (e, $wrapper, id, column, record) {
+                if (column.field == "Valida") {
+                    if (record.Valida == "1")
+                        $wrapper.html("<span class='glyphicon glyphicon-check' aria-hidden='true'></span>");
+                    else
+                        $wrapper.html("<span class='glyphicon glyphicon-unchecked' aria-hidden='true'></span>");
+                }
+            });
+
+            //AQUI SE ESTABLACEN LAS PROPIEDADES Y EVENTOS DEL GRID
+            grid = $("#gridOportunidad").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+                columns: [
+                    { field: "Nombre", title: "Nombre", sortable: true },
+                    { field: "Telefono", title: "Teléfono", sortable: true },
+                    { field: "Correo", title: "Correo", sortable: true },
+                    { field: "OrigenConctacto", title: "Origen de Conctacto", sortable: true },
+                    { field: "interes", title: "Tipo de Venta", sortable: true },
+                    { field: "MedioContacto", title: "Medio de Contacto", sortable: true },
+                    { title: "", width: 42, type: "icon", icon: "glyphicon-list-alt btn btn-primary btn-xs", tooltip: "Ficha de Cliente", events: { "click": CrearContacto } },
+                    { title: "", width: 42, type: "icon", icon: "glyphicon-log-in btn btn-success btn-xs", tooltip: "Enviar", events: { "click": enviarSolicitud } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+            gridReferencias = $("#gridReferencias").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+
+                columns: [
+
+                    { field: "Nombres", title: "Nombre" },
+                    { field: "Apellidos", title: "Apellidos" },
+                    { field: "Parentesco", title: "Parentesco" },
+                    { field: "Telefono", title: "Teléfono" },
+                    { field: "Valida", title: "Valida", width: 100, events: { "click": ReferenciaValida } },
+                    { title: "", field: "Edit", width: 42, type: "icon", icon: "glyphicon-pencil btn btn-default btn-xs", tooltip: "Editar", events: { "click": EditReferencias } },
+                    { title: "", field: "Delete", width: 42, type: "icon", icon: "glyphicon-trash btn btn-danger btn-xs", tooltip: "Eliminar", events: { "click": RemoveReferencias } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+            gridReferencias.on("cellDataBound", function (e, $wrapper, id, column, record) {
+                if (column.field == "Valida") {
+                    if (record.Valida == "1")
+                        $wrapper.html("<span class='glyphicon glyphicon-check' aria-hidden='true'></span>");
+                    else
+                        $wrapper.html("<span class='glyphicon glyphicon-unchecked' aria-hidden='true'></span>");
+                }
+            });
+
+            gridInformacionEco = $("#gridInformacionEco").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+
+                columns: [
+                    { field: "TipoPropiedad", title: "Tipo de Propiedad" },
+                    { field: "Nombre", title: "Nombre" },
+                    { field: "Valor", title: "Valor" },
+                    { field: "Descripcion", title: "Descripción" },
+                    { field: "Valida", title: "Valida", width: 100, events: { "click":InformacionEcoValida } },
+                    { title: "", field: "Edit", width: 42, type: "icon", icon: "glyphicon-pencil btn btn-default btn-xs", tooltip: "Editar", events: { "click": EditInformacionEco } },
+                    { title: "", field: "Delete", width: 42, type: "icon", icon: "glyphicon-trash btn btn-danger btn-xs", tooltip: "Eliminar", events: { "click": RemoveInformacionEco } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+            gridInformacionEco.on("cellDataBound", function (e, $wrapper, id, column, record) {
+                if (column.field == "Valida") {
+                    if (record.Valida == "1")
+                        $wrapper.html("<span class='glyphicon glyphicon-check' aria-hidden='true'></span>");
+                    else
+                        $wrapper.html("<span class='glyphicon glyphicon-unchecked' aria-hidden='true'></span>");
+                }
+            });
+
+            gridAdjuntos = $("#gridAdjuntos").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+                dataSource: "@Url.Action("GetAdjuntos")",
+                autoLoad: false,
+                columns: [
+                    { field: "Nombre", title: "Documento", sortable: true, width: 250 },
+                    { field: "Tipo", title: "Tipo documento", sortable: true, width: 50 },
+
+                    { title: "", field: "Descargar", width: 42 },
+                    { title: "", field: "Delete", width: 42, type: "icon", icon: "glyphicon-trash btn btn-danger btn-xs", tooltip: "Eliminar", events: { "click": RemoveAdjuntos } }
+                ],
+
+                pager: { enable: true, limit: 10, sizes: [5, 10, 20, 100] }
+            });
+
+            gridAdjuntos.clear();
+            gridAdjuntos.reload({ page: 1});
+
+        gridAdjuntos.on("cellDataBound", function (e, $wrapper, id, column, record) {
+            if (column.field == "Descargar") {
+                $wrapper.html('<a title="Descargar" href="../Resolucion/DescargarArchivo?id=' + record.Id + '"  download>' +
+                              '<span class="glyphicon glyphicon-cloud-download btn bg-black btn-xs"></span></a>');
+            }
+        });
+
+
+
+            //EVENTOS DE BOTONES
+            function Search() {
+                grid.reload({ page: 1, searchString: $("#txtBuscar").val() });
+            }
+
+            $('#txtBuscar').keypress(function (e) {
+                if (e.which == 13) {
+                    Search();
+                }
+            });
+
+            $("#btnBuscar").on("click", Search);
+            $("#btnAgregarDireccionModal").on("click", AddDireccion);
+            $("#btnContactoReferencias").on("click", AddReferencias);
+            $("#btnContactoInformacionEco").on("click", AddInformacionEco);
+            $("#btnAgregarAdjuntos").on("click", AddAdjuntos);
+
+            //VALIDACIONES DEL FORMULARIO
+            //validacion del modal de modal conacto
+            $('#formContacto').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    EsIndependiente: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    NumeroDependientes: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Nombres: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    FechaNacimiento: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            date: {
+                                format: '@PropertiesBlo.formatDate',
+                                message: '@PropertiesBlo.msgFechaInvalida'
+                            }
+                        }
+                    },
+
+                    Apellidos: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Genero: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    DUI: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 0)
+                                        if (!ValidarFormatoDUI(value)) {
+                                            return {
+                                                valid: false,
+                                                message: 'DUI no válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    NIT: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            callback: {
+                                callback: function (value, validator) {
+                                    var valorActual = value.replace(/-/g, "").trim();
+                                    if (value.length > 0)
+                                        if (valorActual.length < 14 || valorActual.length > 14) {
+                                            return {
+                                                valid: false,
+                                                message: 'NIT no válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    Correo: {
+                        validators: {
+                            emailAddress: {
+                                message: 'El correo no es válido'
+                            }
+                        }
+                    },
+                    Telefono: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "2" && value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+                    Celular: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+                    Nacionalidad: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdNivelEducacion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdProfesion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdEstadoCivil: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Estado: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActNombreEmpresa: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActActividad: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIdDepartamento: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIdMunicipio: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActCalle: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActPasaje: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActColonia: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActReferenciaUbicacion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActNumeroCasa: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdCiudad: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndAntiguedad: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndTipoLocal: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndDeclaraImpuesto: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndNumeroEmpleados: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndTipoSector: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActIndCantidadLocales: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepJefe: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepFechaIngreso: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepTipoContrato: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepTipoSueldo: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepIngresoFijo: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepIngresoVariable: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepDiaPago: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepFormaPago: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepCargo: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ActDepTelefono: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "2" && value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+                    ActDepCelular: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+
+                    ConyugeTelefonoEmpresa: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "2" && value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+                    CondIdProducto: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondIdInvProductoPartes: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondIdInvCondicionPago: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    Descuento: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondValorDescuento: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondPrecioActual: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondPrecioNuevo: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondTipoPrima: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondvalorPrima: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondGarantia: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondPrimerCuota: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondMontoCuotas: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondMontoFinciado: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondFechaPrimerPago: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondIdNivelPrecio: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } },
+                    CondIdMarca: { validators: { notEmpty: { message: '@PropertiesBlo.msgRequerido' } } }
+
+                }
+            })
+
+                .on('err.form.fv', function (e) {
+                    var $form = $(e.target),
+                        fv = $form.data('formValidation'),
+                        $invalidFields = fv.getInvalidFields();
+                    siguiente = false;
+                })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    siguiente = true;
+
+
+
+                    if (pasoFinal == 6 && enviar) {
+
+                        $("#CondIdMarca").prop("disabled", false);
+                        $("#CondIdNivelPrecio").prop("disabled", false);
+                        $("#CondTipoDescuento").prop("disabled", false);
+
+                        $("#CondPrecioActual").prop("disabled", false);
+                        $("#CondPrecioNuevo").prop("disabled", false);
+                        $("#CondMontoCuotas").prop("disabled", false);
+                        $("#CondMontoFinciado").prop("disabled", false);
+                        $("#CondFechaPrimerPago").prop("disabled", false);
+
+                        $("#CondTipoDescuento").prop("disabled", false);
+                        $("#CondValorDescuento").prop("disabled", false);
+                        $("#CondPrecioNuevo").prop("disabled", false);
+                        $("#CondTipoPrima").prop("disabled", false);
+                        $("#CondvalorPrima").prop("disabled", false);
+                        $("#CondGarantia").prop("disabled", false);
+                        $("#CondPrimerCuota").prop("disabled", false);
+
+
+                        $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                            .done(function (data, textStatus, jqXHR) {
+                                enviar = false;
+                                $("#myModal").modal("hide");
+
+                                $("#CondIdMarca").prop("disabled", true);
+                                $("#CondIdNivelPrecio").prop("disabled", true);
+                                $("#CondTipoDescuento").prop("disabled", true);
+
+                                $("#CondPrecioActual").prop("disabled", true);
+                                $("#CondPrecioNuevo").prop("disabled", true);
+                                $("#CondMontoCuotas").prop("disabled", true);
+                                $("#CondMontoFinciado").prop("disabled", true);
+                                $("#CondFechaPrimerPago").prop("disabled", true);
+
+                                $("#CondTipoDescuento").prop("disabled", true);
+                                $("#CondValorDescuento").prop("disabled", true);
+                                $("#CondPrecioNuevo").prop("disabled", true);
+                                $("#CondTipoPrima").prop("disabled", true);
+                                $("#CondvalorPrima").prop("disabled", true);
+                                $("#CondGarantia").prop("disabled", true);
+                                $("#CondPrimerCuota").prop("disabled", true);
+
+                                Mensajes(data.mensaje);
+                                grid.reload();
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $("#myModal").modal("hide");
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+
+                    if (!limpiarWizard)
+                        $("#formContacto").formValidation('resetForm'); // Elimina las clases de validacion
+
+                });
+
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModal').on('hide.bs.modal', function () {
+                $('#formContacto').trigger("reset"); // Resetea los valores de todos campos
+                $("#formContacto").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+            // validacion del modal de agregar productos
+            $('#formDireccion').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    IdDepartamento: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdMunicipio: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdTipoVivienda: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Direccion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    DirReferencia: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    TiempoResidenciaMeses: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+                    //fin
+
+                }
+            })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                        .done(function (data, textStatus, jqXHR) {
+
+                            $("#myModalDirecciones").modal("hide");
+                            Mensajes(data.mensaje);
+                            gridDirecciones.reload();
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                            $("#myModalDirecciones").modal("hide");
+                            $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                        });
+                });
+
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModalDirecciones').on('hide.bs.modal', function () {
+                $('#formDireccion').trigger("reset"); // Resetea los valores de todos campos
+                $("#formDireccion").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+            $('#formReferencias').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Nombres: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Apellidos: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Parentesco: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Telefono: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            callback: {
+                                callback: function (value, validator) {
+                                    if (value.length > 1)
+                                        if (value.substring(0, 1) != "2" && value.substring(0, 1) != "6" && value.substring(0, 1) != "7") {
+                                            return {
+                                                valid: false,
+                                                message: 'El teléfono no es válido'
+                                            }
+                                        }
+                                    return true;
+                                }
+                            },
+                            regexp: {
+                                regexp: /^\(?([0-9]{4})[-]?([0-9]{4})$/,
+                                message: 'El teléfono no es válido'
+                            }
+                        }
+                    },
+                    IdTipoReferencia: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+                }
+            })
+
+                .on('err.form.fv', function (e) {
+                    var $form = $(e.target),
+                        fv = $form.data('formValidation'),
+                        $invalidFields = fv.getInvalidFields();
+                    siguiente = false;
+                })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                        .done(function (data, textStatus, jqXHR) {
+                            enviar = false;
+                            $("#myModalReferencias").modal("hide");
+                            Mensajes(data.mensaje);
+                            gridReferencias.reload();
+
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                            $("#myModalReferencias").modal("hide");
+                            $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                        });
+
+                });
+
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModalReferencias').on('hide.bs.modal', function () {
+                $('#formReferencias').trigger("reset"); // Resetea los valores de todos campos
+                $("#formReferencias").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+            $('#formInformacionEco').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Nombre: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Valor: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Descripcion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+
+                    IdTipoPropiedad: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+
+                }
+            })
+
+                .on('err.form.fv', function (e) {
+                    var $form = $(e.target),
+                        fv = $form.data('formValidation'),
+                        $invalidFields = fv.getInvalidFields();
+                    siguiente = false;
+                })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                        .done(function (data, textStatus, jqXHR) {
+                            enviar = false;
+                            $("#myModalInformacionEco").modal("hide");
+                            Mensajes(data.mensaje);
+                            gridInformacionEco.reload();
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                            $("#myModalInformacionEco").modal("hide");
+                            $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                        });
+
+                });
+
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModalInformacionEco').on('hide.bs.modal', function () {
+                $('#formInformacionEco').trigger("reset"); // Resetea los valores de todos campos
+                $("#formInformacionEco").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+
+
+            $("#Archivos").filestyle({
+                buttonName: 'btn-info',
+                buttonText: 'Seleccione un documento'
+            });
+
+            $('#formAdjuntos').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Archivos: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Debe seleccionar un documento'
+                            },
+                            file: {
+                                extension: 'pdf,doc,docx,xls,xlsx,png,jpg,jpeg,gif',
+                                type: 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,,image/jpeg,image/png,image/gif',
+                                maxSize: 25000000,
+                                message: 'El tamaño del documento no debe superar 25MB y éste debe ser del tipo: .PDF, .DOC, .DOCX, .XLS, .XLSX, .PNG, ,JPEG,.JPG, .GIF'
+                            }
+                        }
+                    }
+                } //<<<<<<fin fields>>>>>>>>>>>>>>>>
+            }) //<<<<<formValidation>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+                    var formData = new FormData(e.target);
+
+                    $.ajax({
+                        url: $form.attr("action"), type: e.target.method, data: formData,
+                        mimeType: "multipart/form-data",
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                    })
+                        .done(function () {
+                            $("#myModalAdjuntos").modal("hide");
+                            $().toastmessage('showSuccessToast', "Transaccion realizada con exito");
+                            gridAdjuntos.clear();
+                            gridAdjuntos.reload();
+                        })
+                        .fail(function () {
+                            $("#myModalAdjuntos").modal("hide");
+                            $().toastmessage('showErrorToast', "No es posible realizar la transaccion");
+                        });
+
+                });
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModalAdjuntos').on('hide.bs.modal', function () {
+                $('#formAdjuntos').trigger("reset"); // Resetea los valores de todos campos
+                $("#formAdjuntos").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+
+            $('input[type=radio][name=EsIndependiente]').change(function () {
+                if ($("input[name=EsIndependiente]:checked").val() == "true") {
+                    $("#divIndependiente").css("display", "block");
+                    $("#divDependiente").css("display", "none");
+                }
+                else {
+                    $("#divIndependiente").css("display", "none");
+                    $("#divDependiente").css("display", "block");
+                }
+            });
+
+
+            $('#FechaNacimiento').datetimepicker({
+                format: 'd/m/Y',
+                onChangeDateTime: function (dp, $input) {
+                    $('#formContacto').formValidation('revalidateField', 'FechaNacimiento');
+                },
+                timepicker: false
+            });
+
+            $('#ActDepFechaIngreso').datetimepicker({
+                format: 'd/m/Y',
+                onChangeDateTime: function (dp, $input) {
+                    $('#formContacto').formValidation('revalidateField', 'ActDepFechaIngreso');
+                },
+                timepicker: false
+            });
+
+            $('#ConyugeFechaIngreso').datetimepicker({
+                format: 'd/m/Y',
+                onChangeDateTime: function (dp, $input) {
+                    $('#formContacto').formValidation('revalidateField', 'ConyugeFechaIngreso');
+                },
+                timepicker: false
+            });
+
+
+            function obtenerProducto() {
+
+                if ($("#CondIdProducto").val() != null && !editar)
+                    $.ajax({
+                        url: "../Resolucion/GetDatosProducto",
+                        type: "POST",
+                        data: { idProducto: $("#CondIdProducto").val(), idNivelPrecio: $("#CondIdNivelPrecio").val() },
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+
+                            if (data.isCampania) {
+                                $("#CondTipoDescuento").val(data.datos.CondTipoDescuento);
+                                $("#CondValorDescuento").val(data.datos.CondValorDescuento);
+                                $("#CondTipoPrima").val(data.datos.CondTipoPrima);
+                                $("#CondvalorPrima").val(data.datos.CondvalorPrima);
+                                $("#CondGarantia").val(data.datos.CondGarantia);
+                                $("#CondPrimerCuota").val(data.datos.CondPrimerCuota);
+                                $("#CondPrimerCuota").change();
+                                $("#CondIdProductoAccesorio").val(data.datos.CondIdProductoAccesorio);
+                                $("#CondIdProductoAccesorio").change();
+                                $("#CondIdProductoParteServio").val(data.datos.CondIdProductoParteServio);
+                                $("#CondIdProductoParteServio").change();
+                            }
+
+                            $("#CondPrecioActual").val(data.datos.CondPrecioActual);
+                            calcularPrecioNuevo();
+
+
+                            $("#CondIdInvProductoPartes option").remove();
+                            $.each(data.partes, function (key, partes) {
+                                $("#CondIdInvProductoPartes").append('<option value=' + partes.Id + '>' + partes.NumeroParte + '-' + partes.Anio + '</option>');
+                            });
+                            //$('#CondIdInvProductoPartes').val("")
+                            $('#CondIdInvProductoPartes').change();
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+
+                        });
+            }
+
+            //metood que calcula  el Precio Nuevo
+            function calcularPrecioNuevo() {
+                var ValorDescuento = parseFloat($("#CondValorDescuento").val());
+                var precioActual = parseFloat($("#CondPrecioActual").val());
+
+                if ($("#CondTipoDescuento").val() == "Valor") {
+                    $("#CondPrecioNuevo").val(precioActual - ValorDescuento);
+                    $("#CondPrecioNuevo").change();
+                }
+                else {
+                    $("#CondPrecioNuevo").val(precioActual - (precioActual * (ValorDescuento / 100)));
+                    $("#CondPrecioNuevo").change();
+                }
+            };
+
+            //metood que calcula  el Monto Financiado
+            function calcularMontoFinanciado() {
+                var ValorPrima = parseFloat($("#CondvalorPrima").val());
+                var precioNuevo = parseFloat($("#CondPrecioNuevo").val());
+
+                if ($("#CondTipoPrima").val() == "Valor") {
+                    $("#CondMontoFinciado").val(precioNuevo - ValorPrima);
+                    $("#CondMontoFinciado").change();
+                }
+                else {
+                    $("#CondMontoFinciado").val(precioNuevo - (precioNuevo * (ValorPrima / 100)));
+                    $("#CondMontoFinciado").change();
+                }
+            };
+
+            function calcularCuota() {
+                if ($("#CondIdInvCondicionPago").val() != null && $("#CondMontoFinciado").val() != null && !editar)
+                    $.ajax({
+                        url: "../Resolucion/CalculoCuota",
+                        type: "POST",
+                        data: { idCondicionPago: $("#CondIdInvCondicionPago").val(), monto: $("#CondMontoFinciado").val() },
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#CondMontoCuotas").val(data.montoCuota);
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                        });
+
+            };
+
+            $("#CondIdMarca").change(function () {
+                if (!editar)
+                    $.ajax({
+                        url: "../Resolucion/GetProductosClaseMarca", type: "POST",
+                        type: "POST",
+                        data: { idMarca : $("#CondIdMarca").val() },
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#CondIdProducto option").remove();
+                            $.each(data, function (key, lista) {
+                                $("#CondIdProducto").append('<option value=' + lista.Id + '>' + lista.InvProductoDes + '</option>');
+                            });
+                            $("#CondIdProducto").val("");
+                            $("#CondIdProducto").change();
+
+                            $("#CondIdInvProductoPartes").val("");
+                            $("#CondIdInvProductoPartes").change();
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+
+                        });
+            });
+
+            $("#CondIdProducto").change(function () {
+                obtenerProducto();
+            });
+
+            $("#CondIdNivelPrecio").change(function () {
+                obtenerProducto();
+            });
+
+            $("#CondTipoDescuento").change(function () {
+                calcularPrecioNuevo();
+            });
+
+            $("#CondValorDescuento").change(function () {
+                calcularPrecioNuevo();
+            });
+
+            $("#CondTipoPrima").change(function () {
+                calcularMontoFinanciado();
+            });
+
+            $("#CondvalorPrima").change(function () {
+                calcularMontoFinanciado();
+
+            });
+            $("#CondPrecioNuevo").change(function () {
+                calcularMontoFinanciado();
+            });
+
+            $("#CondPrimerCuota").change(function () {
+                var primerCuota = parseInt($("#CondPrimerCuota").val()) + 1;
+                var e = new Date()
+                $("#CondFechaPrimerPago").val(e.getDate() + "/" + (parseInt(e.getMonth()) + primerCuota) + "/" + e.getFullYear())
+            });
+
+            $("#CondIdInvCondicionPago").change(function () {
+                calcularCuota();
+            });
+            $("#CondMontoFinciado").change(function () {
+                calcularCuota();
+            });
+
+            $('#ValidaCondicionesCred').change(function () {
+                $.ajax({
+                    url: "../Resolucion/ValidaCondicionesCred", type: "POST",
+                    type: "POST",
+                    data: { idContacto: $("#Id").val(),validaCondicionesCred: this.checked },
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        Mensajes(data.mensaje);
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                        $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                    });
+            });
+
+            $('#ValidaDatosCliente').change(function () {
+                $.ajax({
+                    url: "../Resolucion/ValidaDatosCliente", type: "POST",
+                    type: "POST",
+                    data: { idContacto: $("#Id").val(), validaDatosCliente: this.checked },
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        Mensajes(data.mensaje);
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                        $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                    });
+            });
+
+            $('#ValidaDatosConyuge').change(function () {
+                $.ajax({
+                    url: "../Resolucion/ValidaDatosConyuge", type: "POST",
+                    type: "POST",
+                    data: { idContacto: $("#Id").val(), validaDatosConyuge: this.checked },
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        Mensajes(data.mensaje);
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                        $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                    });
+             });
+
+            $('#ValidaActividadEco').change(function () {
+                $.ajax({
+                    url: "../Resolucion/ValidaActividadEco", type: "POST",
+                    type: "POST",
+                    data: { idContacto: $("#Id").val(), validaActividadEco: this.checked },
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        Mensajes(data.mensaje);
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                        $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                    });
+            });
+
+
+
+            //VALIDACIONES DEL FORMULARIO
+            $('#formOportunidad').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Estado: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ComentarioAnalisis: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+                }
+            })
+
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    if ($("#ComentarioAnalisis").val() != "") {
+                        //Envio de datos
+                        $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                            .done(function (data, textStatus, jqXHR) {
+                                $("#myModalAnalisis").modal("hide");
+                                Mensajes(data.mensaje);
+                                grid.reload();
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $("#myModalAnalisis").modal("hide");
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    } else {
+                        $().toastmessage('showErrorToast', "El comentario es requerido");
+                    }
+
+                });
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModalAnalisis').on('hide.bs.modal', function () {
+                $('#formOportunidad').trigger("reset"); // Resetea los valores de todos campos
+                $("#formOportunidad").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+            $("#toggle-calculadora").click(function () {
+                $("#calCuota").val(0);
+                $("#calMonto").val(0);
+                $("#myModalCalculadora").modal("show");
+            });
+
+            $("#btnCalculadora").click(function () {
+                if ($("#calPlazo").val() != null && $("#calMonto").val() != null)
+                    $.ajax({
+                        url: "../Resolucion/CalculoCuota",
+                        type: "POST",
+                        data: { idCondicionPago: $("#calPlazo").val(), monto: $("#calMonto").val() },
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#calCuota").val(data.montoCuota);
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                        });
+            });
+
+        });
+    </script>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header row">
+    <h1 class="col-md-6">
+        ANALISIS
+        <small>COMITÉ DE CRÉDITO</small>
+    </h1>
+    <section class="text-right col-md-6">
+        <button id="toggle-calculadora" class="btn btn-primary btn-xs">
+            <span class="fa fa-calculator"></span> Calculadora
+        </button>
+    </section>
+</section>
+
+
+<!-- Main content -->
+<section class="content" style="padding-top:0; padding-bottom:0; ">
+    <div class="box box-primary" style="margin-bottom:0; ">
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group pull-right">
+                        <input type="text" id="txtBuscar" class="form-control" placeholder="Buscar ...">
+                        <span class="input-group-btn">
+                            <button type="submit" id="btnBuscar" class="btn btn-primary"><span class='glyphicon glyphicon glyphicon-search'></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive" style="overflow-y: hidden; ">
+                @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                <table id="gridOportunidad" data-source="@Url.Action("GetOportunidad")"></table>
+            </div>
+
+        </div>
+    </div><!-- /.box -->
+</section><!-- /.content -->
+<!--MODAL CON PESTAÑAS-->
+<div id='myModal' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog" style="width :80%">
+        <form id="formContacto" action="/Resolucion/Save" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    Ficha de Cliente
+                </div>
+                <div class="panel-body">
+
+                    <input id="Id" type="hidden" name="Id" value="">
+                    <input id="IdOportunidad" type="hidden" name="IdOportunidad" value="">
+                    <input id="IdTipoVenta" type="hidden" name="IdTipoVenta" value="">
+
+                    <!-- SmartWizard html -->
+                    <div id="smartwizard">
+                        <ul>
+                            <li><a href="#step-1">Paso 1<br /><h5>Condiciones</h5></a></li>
+                            <li><a href="#step-2">Paso 2<br /><h5>Cliente &nbsp;&nbsp;</h5></a></li>
+                            <li><a href="#step-3">Paso 3<br /><h5>Ubicaciones</h5></a></li>
+                            <li><a href="#step-4">Paso 4<br /><h5>Actividad Económica</h5></a></li>
+                            <li><a href="#step-5">Paso 5<br /><h5>Conyuge</h5></a></li>
+                            <li><a href="#step-6">Paso 6<br /><h5>Referencias </h5></a></li>
+                            <li><a href="#step-7">Paso 7<br /><h5>Información Económica </h5></a></li>
+                        </ul>
+
+                        <div>
+                            <div id="step-1" class="">
+
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span data-toggle="tooltip" title="" class="badge bg-green" data-original-title="Valido"> <input type="checkbox" id="ValidaCondicionesCred" name="ValidaCondicionesCred" value="true"></span>
+                                    </div>
+                                    <hr />
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdMarca">Marca<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdMarca" id="CondIdMarca">
+                                                <option value="0">Todas</option>
+                                                @foreach (InvMarca item in ViewBag.marca)
+                                                {
+                                                <option value=@item.Id>@item.InvMarcaDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdNivelPrecio">Nivel de precio<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdNivelPrecio" id="CondIdNivelPrecio">
+                                                @foreach (InvNivelPrecio item in ViewBag.nivelPrecio)
+                                                {
+                                                <option value=@item.Id>@item.InvNivelPrecioDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdProducto">Producto<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdProducto" id="CondIdProducto"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdInvProductoPartes">Chasis<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdInvProductoPartes" id="CondIdInvProductoPartes"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondPrecioActual">Precio actual<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondPrecioActual" name="CondPrecioActual" maxlength="21" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondPrimerCuota">Primer cuota<span class="text-red">*</span>: </label>
+                                            <select class="form-control" id="CondPrimerCuota" name="CondPrimerCuota">
+                                                <option value="1" selected>1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                                <option value="6">6</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondTipoDescuento">Tipo de descuento<span class="text-red">*</span>: </label>
+                                            <select class="form-control" id="CondTipoDescuento" name="CondTipoDescuento">
+                                                <option value="Valor" selected>Valor</option>
+                                                <option value="Porcentaje">Porcentaje</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondValorDescuento">Valor de descuento<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondValorDescuento" name="CondValorDescuento" maxlength="21">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondGarantia">Garantia<span class="text-red">*</span>: </label>
+                                            <input class="form-control numeric" id="CondGarantia" name="CondGarantia" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondTipoPrima">Tipo de prima<span class="text-red">*</span>: </label>
+                                            <select class="form-control" id="CondTipoPrima" name="CondTipoPrima">
+                                                <option value="Valor" selected>Valor</option>
+                                                <option value="Porcentaje">Porcentaje</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondvalorPrima">Valor de prima<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondvalorPrima" name="CondvalorPrima" maxlength="21">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondPrecioNuevo">Precio nuevo<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondPrecioNuevo" name="CondPrecioNuevo" maxlength="21" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdInvCondicionPago">Condición de pago<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdInvCondicionPago" id="CondIdInvCondicionPago">
+
+                                                @foreach (InvCondicionPago item in ViewBag.condicionPago)
+                                                {
+                                                <option value=@item.Id>@item.InvCondicionPago1</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="CondIdTasaInteres">Tasa de interes<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="CondIdTasaInteres" id="CondIdTasaInteres">
+                                                @foreach (crmTasaInteres item in ViewBag.tasaInteres)
+                                                {
+                                                <option value=@item.Id>@item.TasaInteresEfectiva</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondMontoCuotas">Monto de cuotas<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondMontoCuotas" name="CondMontoCuotas" maxlength="21" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="CondMontoFinciado">Monto financiado<span class="text-red">*</span>: </label>
+                                            <input class="form-control decimal" id="CondMontoFinciado" name="CondMontoFinciado" maxlength="21" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha de primer pago<span class="text-red">*</span>: </label>
+                                            <input class="form-control dpicker" id="CondFechaPrimerPago" name="CondFechaPrimerPago" type="text" value="" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <br />
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="panel panel-primary">
+                                            <div class="panel-heading">
+                                                <h3 class="panel-title">Regalías</h3>
+                                            </div>
+                                            <div class="panel-body">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label" for="CondIdProductoAccesorio">Accesorio:</label>
+                                                        <select class="form-control select2-single" name="CondIdProductoAccesorio" id="CondIdProductoAccesorio">
+                                                            <option value="">Ninguno</option>
+                                                            @foreach (InvProducto item in ViewBag.accesorios)
+                                                            {
+                                                            <option value=@item.Id>@item.InvProductoDes</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label class="control-label" for="CondIdProductoParteServio">Servico:</label>
+                                                        <select class="form-control select2-single" name="CondIdProductoParteServio" id="CondIdProductoParteServio">
+                                                            <option value="">Ninguno</option>
+                                                            @foreach (InvProducto item in ViewBag.servicios)
+                                                            {
+                                                            <option value=@item.Id>@item.InvProductoDes</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div id="step-2" class="">
+
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span data-toggle="tooltip" title="" class="badge bg-green" data-original-title="Valido"> <input type="checkbox" id="ValidaDatosCliente" name="ValidaDatosCliente" value="true"></span>
+                                    </div>
+                                    <hr />
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Nombres">Nombres<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="Nombres" name="Nombres" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Apellidos">Apellidos<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="Apellidos" name="Apellidos" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Genero">Sexo<span class="text-red">*</span>: </label>
+                                            <select class="form-control" id="Genero" name="Genero">
+                                                <option value="M" selected>Hombre</option>
+                                                <option value="F">Mujer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="DUI">DUI<span class="text-red">*</span>: </label>
+                                            <input class="form-control DUI" id="DUI" name="DUI" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="NIT">NIT<span class="text-red">*</span>: </label>
+                                            <input class="form-control NIT" id="NIT" name="NIT" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Correo">Correo: </label>
+                                            <input class="form-control" id="Correo" name="Correo" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Telefono">Teléfono: </label>
+                                            <input class="form-control telefono" id="Telefono" name="Telefono" type="text" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Celular">Celular:</label>
+                                            <input class="form-control telefono" id="Celular" name="Celular" type="text" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConocidoPor">Conocido por:</label>
+                                            <input class="form-control" id="ConocidoPor" name="ConocidoPor" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="Nacionalidad">Nacionalidad<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="Nacionalidad" name="Nacionalidad" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Ciudad<span class="text-red">*</span>:  </label>
+                                            <select class="form-control select2-single" name="IdCiudad" id="IdCiudad">
+                                                @foreach (Ciudades item in ViewBag.ciudad)
+                                                {
+                                                <option value=@item.Id>@item.CiudadesDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Nivel de Educación<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="IdNivelEducacion" id="IdNivelEducacion">
+                                                @foreach (crmNivelEducacion item in ViewBag.nivelEducacion)
+                                                {
+                                                <option value=@item.Id>@item.NivelEducacion</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Profesión<span class="text-red">*</span>: </label>
+                                            <select class="form-control select2-single" name="IdProfesion" id="IdProfesion">
+                                                @foreach (crmProfesion item in ViewBag.profesion)
+                                                {
+                                                <option value=@item.Id>@item.Profesion</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Estado Civil<span class="text-red">*</span>: </label>
+                                            <select class="form-control select2-single" name="IdEstadoCivil" id="IdEstadoCivil">
+                                                @foreach (EstadoCivil item in ViewBag.estadoCivil)
+                                                {
+                                                <option value=@item.Id>@item.EstadoCivilDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="FechaNacimiento">Fecha de nacimiento<span class="text-red">*</span>:</label>
+                                            <input class="form-control dpicker" id="FechaNacimiento" name="FechaNacimiento" type="text" value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="NumeroDependientes">Numero de dependientes<span class="text-red">*</span>: </label>
+                                            <input class="form-control numeric" id="NumeroDependientes" name="NumeroDependientes" type="text" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Tipo de Trabajo<span class="text-red">*</span>: </label>
+                                        <div class="col-md-12">
+                                            <div class="form-group  has-feedback">
+                                                <input type="radio" id="Independiente" name="EsIndependiente" checked value="true"> Independiente
+                                                <input type="radio" id="Dependiente" name="EsIndependiente" value="false"> Dependiente
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="box box-primary box-solid">
+                                            <div class="box-header with-border">
+                                                <h3 class="box-title">Documentos Adjuntos </h3>
+
+                                                <div class="box-tools pull-right">
+                                                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                                        <i class="fa fa-minus"></i>
+                                                    </button>
+                                                </div>
+                                                <!-- /.box-tools -->
+                                            </div>
+                                            <!-- /.box-header -->
+                                            <div class="box-body" style="">
+                                                <br />
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <button type="button" id="btnAgregarAdjuntos" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                                                    </div>
+                                                </div>
+                                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                                    <table id="gridAdjuntos" data-source="@Url.Action("GetAdjuntos")"></table>
+                                                </div>
+
+                                            </div>
+                                            <!-- /.box-body -->
+                                        </div>
+                                        <!-- /.box -->
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div id="step-3" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button type="button" id="btnAgregarDireccionModal" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                    <table id="gridDireccion" data-source="@Url.Action("GetDirecciones")"></table>
+                                </div>
+
+                            </div>
+
+                            <div id="step-4" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span data-toggle="tooltip" title="" class="badge bg-green" data-original-title="Valido"> <input type="checkbox" id="ValidaActividadEco" name="ValidaActividadEco" value="true"></span>
+                                    </div>
+                                    <hr />
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Departamento<span class="text-red">*</span>:</label>
+                                            <select class="form-control select2-single" name="ActIdDepartamento" id="ActIdDepartamento">
+                                                @foreach (Estados item in (List<Estados>)ViewBag.departamento)
+                                                {
+                                                <option value=@item.Id>@item.EstadoDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Municipio<span class="text-red">*</span>:  </label>
+                                            <select class="form-control select2-single" name="ActIdMunicipio" id="ActIdMunicipio">
+                                                @foreach (Ciudades item in (List<Ciudades>)ViewBag.ciudad)
+                                                {
+                                                <option value=@item.Id>@item.CiudadesDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActCalle">Calle<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActCalle" name="ActCalle" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActPasaje">Pasaje<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActPasaje" name="ActPasaje" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActColonia">Colonia<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActColonia" name="ActColonia" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActNumeroCasa">Numero de casa<span class="text-red">*</span>: </label>
+                                            <input class="form-control numeric" id="ActNumeroCasa" name="ActNumeroCasa" type="text" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActReferenciaUbicacion">Referencia de ubicación<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActReferenciaUbicacion" name="ActReferenciaUbicacion" type="text" maxlength="200">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActActividad">Actividad<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActActividad" name="ActActividad" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ActNombreEmpresa">Nombre de empresa<span class="text-red">*</span>: </label>
+                                            <input class="form-control" id="ActNombreEmpresa" name="ActNombreEmpresa" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+
+
+                                    @*para cuando el cliente sea Independiente*@
+
+                                    <div id="divIndependiente">
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActIndAntiguedad">Antiguedad<span class="text-red">*</span>:</label>
+                                                <input class="form-control numeric" id="ActIndAntiguedad" name="ActIndAntiguedad" type="text" maxlength="100000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActIndTipoLocal">Tipo de local<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActIndTipoLocal" name="ActIndTipoLocal" type="text" maxlength="50">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActIndNumeroEmpleados">Número de empleados<span class="text-red">*</span>:</label>
+                                                <input class="form-control numeric" id="ActIndNumeroEmpleados" name="ActIndNumeroEmpleados" type="text" maxlength="100000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActIndTipoSector">Tipo de local<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActIndTipoSector" name="ActIndTipoSector" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActIndCantidadLocales">Cantidad de locales<span class="text-red">*</span>:</label>
+                                                <input class="form-control numeric" id="ActIndCantidadLocales" name="ActIndCantidadLocales" type="text" maxlength="100000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Declara Impuestos<span class="text-red">*</span>: </label>
+                                            <div class="col-md-12">
+                                                <div class="form-group  has-feedback">
+                                                    <input type="radio" id="Si" name="ActIndDeclaraImpuesto" checked value="true"> Si
+                                                    <input type="radio" id="No" name="ActIndDeclaraImpuesto" value="false"> No
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label" for="ActIndDireccion2">Segunda dirección: </label>
+                                                <textarea class="form-control" id="ActIndDireccion2" name="ActIndDireccion2" type="text" value="" maxlength="100" rows="1"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label" for="ActIndDireccion3">Tercera dirección: </label>
+                                                <textarea class="form-control" id="ActIndDireccion3" name="ActIndDireccion3" type="text" value="" maxlength="100" rows="1"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label class="control-label" for="ActIndDireccion4">Cuarta dirección: </label>
+                                                <textarea class="form-control" id="ActIndDireccion4" name="ActIndDireccion4" type="text" value="" maxlength="100" rows="1"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*fin Independiente*@
+
+                                    @*para cuando el cliente sea Dependiente*@
+                                    <div id="divDependiente">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepJefe">Tipo de local<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepJefe" name="ActDepJefe" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label class="control-label" for="ActDepFechaIngreso">Fecha de Ingreso<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepFechaIngreso" name="ActDepFechaIngreso" type="text" value="">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepTipoContrato">Tipo de Contrato<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepTipoContrato" name="ActDepTipoContrato" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepTipoSueldo">Tipo de Sueldo<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepTipoSueldo" name="ActDepTipoSueldo" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepIngresoFijo">Ingreso fijo<span class="text-red">*</span>:</label>
+                                                <input class="form-control decimal" id="ActDepIngresoFijo" name="ActDepIngresoFijo" type="text" maxlength="100000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepIngresoVariable">Ingreso variable<span class="text-red">*</span>:</label>
+                                                <input class="form-control decimal" id="ActDepIngresoVariable" name="ActDepIngresoVariable" type="text" maxlength="100000">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepDiaPago">Dia de Pago<span class="text-red">*</span>:</label>
+                                                <input class="form-control numeric" id="ActDepDiaPago" name="ActDepDiaPago" type="text" maxlength="2">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepFormaPago">Forma de Pago<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepFormaPago" name="ActDepFormaPago" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepCargo">Cargo<span class="text-red">*</span>:</label>
+                                                <input class="form-control" id="ActDepCargo" name="ActDepCargo" type="text" maxlength="100">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepTelefono ">Teléfono: </label>
+                                                <input class="form-control telefono" id="ActDepTelefono" name="ActDepTelefono" type="text" maxlength="9">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="ActDepCelular">Celular:</label>
+                                                <input class="form-control telefono" id="ActDepCelular" name="ActDepCelular" type="text" maxlength="9">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*fin Dependiente*@
+
+                                </div>
+
+                            </div>
+
+                            <div id="step-5" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span data-toggle="tooltip" title="" class="badge bg-green" data-original-title="Valido"> <input type="checkbox" id="ValidaDatosConyuge" name="ValidaDatosConyuge" value="true"></span>
+                                    </div>
+                                    <hr />
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeNombres">Nombres: </label>
+                                            <input class="form-control" id="ConyugeNombres" name="ConyugeNombres" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeApellidos">Apellidos: </label>
+                                            <input class="form-control" id="ConyugeApellidos" name="ConyugeApellidos" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeGenero">Sexo: </label>
+                                            <select class="form-control" id="ConyugeGenero" name="ConyugeGenero">
+                                                <option value="M" selected>Hombre</option>
+                                                <option value="F">Mujer</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeConocidoPor">Conocido por: </label>
+                                            <input class="form-control" id="ConyugeConocidoPor" name="ConyugeConocidoPor" type="text" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeEmpresa">Empresa: </label>
+                                            <input class="form-control" id="ConyugeEmpresa" name="ConyugeEmpresa" type="text" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeActividadEmpresa">Actividad ecónomica: </label>
+                                            <input class="form-control" id="ConyugeActividadEmpresa" name="ConyugeActividadEmpresa" type="text" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeCargoEmpresa">Cargo en la empresa: </label>
+                                            <input class="form-control" id="ConyugeCargoEmpresa" name="ConyugeCargoEmpresa" type="text" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeTelefonoEmpresa">Teléfono de la empresa: </label>
+                                            <input class="form-control telefono" id="ConyugeTelefonoEmpresa" name="ConyugeTelefonoEmpresa" type="text" maxlength="50">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="ConyugeIngresoMensual">Ingreso mensual:</label>
+                                            <input class="form-control decimal" id="ConyugeIngresoMensual" name="ConyugeIngresoMensual" type="text" maxlength="10000000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label" for="ConyugeFechaIngreso">Fecha de Ingreso:</label>
+                                            <input class="form-control" id="ConyugeFechaIngreso" name="ConyugeFechaIngreso" type="text" value="">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                    <table id="gridproductos" data-source="@Url.Action("GetProductos")"></table>
+                                </div>
+                            </div>
+
+                            <div id="step-6" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button type="button" id="btnContactoReferencias" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                    <table id="gridReferencias" data-source="@Url.Action("GetReferencias")"></table>
+                                </div>
+
+                            </div>
+
+                            <div id="step-7" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button type="button" id="btnContactoInformacionEco" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                    <table id="gridInformacionEco" data-source="@Url.Action("GetInfoEconomica")"></table>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCerrar</button>
+                    @* <input type="submit" id="btnGuardar" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">*@
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!--MODAL-->
+<div id='myModalAnalisis' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog">
+        <form id="formOportunidad" action="/Resolucion/SaveResolucion" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    Resolución 
+                </div>
+                <div class="panel-body">
+
+                    <input id="IdResolicion" type="hidden" name="Id" value="">
+
+                    <!-- /.nav-tabs-custom" -->
+                    <div class="nav-tabs-custom">
+
+                        <!-- /.tab-pane -->
+                        <div class="tab-pane" id="calificar">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="Estado">Estado<span class="text-red">*</span>: </label>
+                                        <select class="form-control" id="Estado" name="Estado">
+                                            <option value="CreditoAprobado" selected style="background-color:mediumspringgreen;">Aprobado</option>
+                                            <option value="CreditoCondicionado" style="background-color:orange;">Condicionado</option>
+                                            <option value="CreditoDenegado" style="background-color:red;">Denegado</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="ComentarioAnalisis">Comentario<span class="text-red">*</span>: </label>
+                                        <textarea class="form-control" id="ComentarioAnalisis" name="ComentarioAnalisis" type="text" maxlength="1000"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-footer text-right">
+                        <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                        <input type="submit" id="btnGuardar" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+<!--MODAL DIRECCIONES-->
+<div id='myModalDirecciones' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog" style="width :50%">
+
+        <form id="formDireccion" action="/Resolucion/AgregarDireccion" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    Agregar Direcciones
+                </div>
+                <div class="panel-body">
+                    <input id="IdContactoDirecciones" type="hidden" name="Id" value="">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Departamento<span class="text-red">*</span>:</label>
+                            <select class="form-control select2-single" name="IdDepartamento" id="IdDepartamento">
+                                @foreach (Estados item in (List<Estados>)ViewBag.departamento)
+                                {
+                                <option value=@item.Id>@item.EstadoDes</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Municipio<span class="text-red">*</span>:  </label>
+                            <select class="form-control select2-single" name="IdMunicipio" id="IdMunicipio">
+                                @foreach (Ciudades item in (List<Ciudades>)ViewBag.ciudad)
+                                {
+                                <option value=@item.Id>@item.CiudadesDes</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Tipo de vivienda<span class="text-red">*</span>:  </label>
+                            <select class="form-control select2-single" name="IdTipoVivienda" id="IdTipoVivienda">
+                                @foreach (crmTipoVivienda item in (List<crmTipoVivienda>)ViewBag.tipoVivienda)
+                                {
+                                <option value=@item.Id>@item.TipoVivienda</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Tipo de dirección<span class="text-red">*</span>:  </label>
+                            <select class="form-control select2-single" name="IdTipoDireccion" id="IdTipoDireccion">
+                                @foreach (crmTipoDireccion item in (List<crmTipoDireccion>)ViewBag.tipoDireccion)
+                                {
+                                    <option value=@item.Id>@item.TipoDireccion</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Tiempo de residencia(meses)<span class="text-red">*</span>: </label>
+                            <input class="form-control numeric" id="TiempoResidenciaMeses" name="TiempoResidenciaMeses" type="text" value="" maxlength="9">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Dirección<span class="text-red">*</span>: </label>
+                            <textarea class="form-control" id="Direccion" name="Direccion" type="text" value="" maxlength="200"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Dirección de refencia<span class="text-red">*</span>: </label>
+                            <textarea class="form-control" id="DirReferencia" name="DirReferencia" type="text" value="" maxlength="200"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Comentario: </label>
+                            <textarea class="form-control" id="Comentario" name="Comentario" type="text" value="" maxlength="200"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnGuardarDireccion" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!--MODAL REFERENCIAS-->
+<div id='myModalReferencias' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog" style="width :50%">
+
+        <form id="formReferencias" action="/Resolucion/AgregarReferencia" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    Agregar Referencias
+                </div>
+                <div class="panel-body">
+                    <input id="IdContactoReferencias" type="hidden" name="Id" value="">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="IdTipoReferencia">Tipo de Referencia<span class="text-red">*</span>:</label>
+                            <select class="form-control select2-single" name="IdTipoReferencia" id="RIdTipoReferencia">
+                                @foreach (crmTipoReferencia item in (List<crmTipoReferencia>)ViewBag.tipoReferencia)
+                                {
+                                <option value=@item.Id>@item.TipoReferencia</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="Nombres">Nombres<span class="text-red">*</span>: </label>
+                            <input class="form-control" id="RNombres" name="Nombres" type="text" value="" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="Apellidos">Apellidos<span class="text-red">*</span>: </label>
+                            <input class="form-control" id="RApellidos" name="Apellidos" type="text" value="" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="Parentesco">Parentesco<span class="text-red">*</span>: </label>
+                            <input class="form-control" id="RParentesco" name="Parentesco" type="text" value="" maxlength="50">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label" for="Telefono">Teléfono<span class="text-red">*</span>: </label>
+                            <input class="form-control telefono" id="RTelefono" name="Telefono" type="text" value="" maxlength="9">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnReferencias" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!--MODAL INFORMACION ECONOMICA-->
+<div id='myModalInformacionEco' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog" style="width :50%">
+
+        <form id="formInformacionEco" action="/Resolucion/AgregarInfoEconomica" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    Agregar Informacion Económica
+                </div>
+                <div class="panel-body">
+                    <input id="IdContactoInformacionEco" type="hidden" name="Id" value="">
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Tipo de Propiedad<span class="text-red">*</span>:</label>
+                            <select class="form-control select2-single" name="IdTipoPropiedad" id="EIdTipoPropiedad">
+                                @foreach (crmTipoPropiedad item in (List<crmTipoPropiedad>)ViewBag.tipoPropiedad)
+                                {
+                                <option value=@item.Id>@item.TipoPropiedad</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Valor<span class="text-red">*</span>: </label>
+                            <input class="form-control decimal" id="EValor" name="Valor" value="" maxlength="21">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Nombre<span class="text-red">*</span>: </label>
+                            <input class="form-control" id="ENombre" name="Nombre" type="text" value="" maxlength="100">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label">Descripcion<span class="text-red">*</span>: </label>
+
+                            <textarea class="form-control" id="EDescripcion" name="Descripcion" rows="5" type="text" value="" maxlength="500"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnInformacionEco" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!--MODAL ADJUNTAR ARCHIVOS-->
+<div id='myModalAdjuntos' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog">
+        <form id="formAdjuntos" action="/Resolucion/SaveAdjuntos" enctype="multipart/form-data" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    Documentos Adjuntos
+                </div>
+                <div class="panel-body">
+                    <!--ID_Adjuntos es el ID de esta entidad se debe cambiar porque en la vista
+                    principal no pueden existir elementos con el mismo id
+                    para evitar problemas con el envio a nuestro controller se mantiene el name con el nombre original-->
+                    <input id="ID_Adjuntos" type="hidden" name="ID" value="">
+
+                    <!--ID_OFICIO este campo esta oculto ya que es el maestro de esta entidad
+                    Se establece el valor mediante un ViewBag cargado en el controller-->
+                    @* <input type="hidden" name="ID_ROS" id="ID_ROS_ADJUNTO" value="@ViewBag.ID_ROS">*@
+
+                    <div class="row">
+                        <!--INFORMACION GENERAL-->
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input id="Archivos" type="file" name="Archivos" /><br />
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnGuardarAdjuntos" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!--MODAL CALCULADORA-->
+<div id='myModalCalculadora' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                Calculadora
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label">Condición de pago:</label>
+                        <select class="form-control select2-single" id="calPlazo">
+                            @foreach (InvCondicionPago item in ViewBag.condicionPago)
+                            {
+                                <option value=@item.Id>@item.InvCondicionPago1</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label">Monto: </label>
+                        <input class="form-control decimal" id="calMonto" value="" maxlength="21">
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <label class="control-label">Cuota: </label>
+                        <input class="form-control decimal" id="calCuota" disabled value="" maxlength="21">
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer text-right">
+                <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                <input type="button" id="btnCalculadora" value="Calcular" class="btn btn-primary">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

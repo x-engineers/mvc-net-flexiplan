@@ -1,0 +1,10 @@
+/packages/
+/TestResults/
+/.nuget/
+!/.vs/              <== include this folder to source control, folder only, nothing else
+/.vs/*              <== but ignore all files and sub-folder inside this folder
+!/View/obj/              <== include this folder to source control, folder only, nothing else
+/View/obj/*              <== but ignore all files and sub-folder inside this folder
+!/View/bin/              <== include this folder to source control, folder only, nothing else
+/View/bin/*              <== but ignore all files and sub-folder inside this folder
+/View/--Web.config

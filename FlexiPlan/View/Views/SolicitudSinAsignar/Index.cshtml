@@ -1,0 +1,220 @@
+﻿@using Blo.Properties
+@using Model;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var gridAsignar;
+          
+            //REALIZA LA LLAMADA A UN MODAL PARA UN NUEVO REGUISTRO
+            function AsignarEmpleado() {
+                $("#IdEmpleado").val("");
+                $("#IdEmpleado").change();
+                $("#myModalAsignarEmpleado").modal("show");
+            }
+         
+            //AQUI SE ESTABLACEN LAS PROPIEDADES Y EVENTOS DEL GRID
+        
+            gridAsignar = $("#gridAsignarEmpleado").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+                filterable: false,
+                selectionType: 'multiple',
+                selectionMethod: 'checkbox',
+                primaryKey: 'Id',
+                columns: [
+                    { field: "Nombre", title: "Nombre", sortable: true },
+                    { field: "Telefono", title: "Teléfono", sortable: true },
+                    { field: "Correo", title: "Correo", sortable: true },
+                    { field: "OrigenConctacto", title: "Origen de Conctacto", sortable: true },
+                    { field: "interes", title: "Tipo de Venta", sortable: true },
+                    { field: "MedioContacto", title: "Medio de Contacto", sortable: true },
+             ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+           
+            //EVENTOS DE BOTONES
+          
+            function SearchAsignacion() {
+                gridAsignar.reload({ page: 1, searchString: $("#txtBuscarAsignacion").val() });
+            }
+          
+           
+            $('#txtBuscarAsignacion').keypress(function (e) {
+                if (e.which == 13) {
+                    SearchAsignacion();
+                }
+            });
+
+
+            
+            $("#btnBuscarAsignacion").on("click", SearchAsignacion);
+            $("#btnModalAsignar").on("click", AsignarEmpleado);
+
+
+            //VALIDACIONES DEL FORMULARIO         
+            $('#formAsignarVendedor').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    IdEmpleado: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+                }
+            })
+
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+                    var ids = gridAsignar.getSelections();
+                    //Envio de datos
+                    $.ajax({ url: $form.attr('action'), type: "POST", data: { idEmpleado: $('select[id="IdEmpleado"] option:selected').val(), ids:ids } })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#myModalAsignarEmpleado").modal("hide");
+                            Mensajes(data.mensaje);
+                            gridAsignar.reload();
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                            $("#myModalAsignarEmpleado").modal("hide");
+                            $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                        });
+                });
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+                  $('#myModalAsignarEmpleado').on('hide.bs.modal', function () {
+                      $('#formAsignarVendedor').trigger("reset"); // Resetea los valores de todos campos
+                      $("#formAsignarVendedor").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+
+             //SELECT2 PERSONALIZADO TIPO TABLA
+             $('#IdEmpleado').select2({
+                 templateResult: function (data) {
+                     if (data.text === 'Seleccione ...')
+                         return $(
+                             '<div class="row" style="font-weight: bold;">' +
+                             '<div class="col-md-4"> Código </div>' +
+                             '<div class="col-md-8"> Nombre </div>' +
+                             '</div>'
+                         );
+                     var r = data.text.split('|');
+                     var $result = $(
+                         '<div class="row">' +
+                         '<div class="col-md-4">' + r[0] + '</div>' +
+                         '<div class="col-md-8">' + r[1] + '</div>' +
+                         '</div>'
+                     );
+                     return $result;
+                 },
+                 templateSelection: function (data) {
+                     if (data.text === 'Seleccione ...')
+                         return $(
+                             '<div class="row">' +
+                             '<div class="col-md-4">' + data.text + '</div>' +
+                             '<div class="col-md-8"></div>' +
+                             '</div>'
+                         );
+                     var r = data.text.split('|');
+                     var $result = $(
+                         '<div class="row">' +
+                         '<div class="col-md-4">' + r[0] + '</div>' +
+                         '<div class="col-md-8">' + r[1] + '</div>' +
+                         '</div>'
+                     );
+                     return $result;
+                 }
+             });
+
+
+         });
+    </script>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        SOLICITUD SIN ASIGNAR
+        <small>COMITÉ DE CRÉDITO</small>
+    </h1>
+</section>
+
+
+<!-- Main content -->
+<section class="content" style="padding-top:0; padding-bottom:0; ">
+    <div class="box box-primary" style="margin-bottom:0; ">
+        <div class="box-body">
+
+  
+                    <div class="row">
+                        <div class="col-md-3">
+                            <button type="button" id="btnModalAsignar" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-retweet'></span> @PropertiesBlo.btnAsignar</button>
+                        </div>
+                        <div class="col-md-9 ">
+                            <div class="input-group pull-right">
+                                <input type="text" id="txtBuscarAsignacion" class="form-control" placeholder="Buscar ...">
+                                <span class="input-group-btn">
+                                    <button type="submit" id="btnBuscarAsignacion" class="btn btn-primary"><span class='glyphicon glyphicon glyphicon-search'></span></button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="overflow-y: hidden; ">
+                        @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                        <table id="gridAsignarEmpleado" data-source="@Url.Action("GetOportunidadSinAsignar")"></table>
+                    </div>
+             </div>
+            
+        </div>    
+</section><!-- /.content -->
+
+
+<!--MODAL ASIGNAR VENDEDOR-->
+<div id='myModalAsignarEmpleado' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog">
+        <form id="formAsignarVendedor" action="/SolicitudSinAsignar/AsignarVendedaor" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    Asignar Solicitud
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="IdEmpleado">Analista<span class="text-red">*</span>: </label>
+                        <select id="IdEmpleado" name="IdEmpleado" style="width:100%">
+                            <option value="">Seleccione ...</option>
+                            @foreach (rrhEmpleado item in (List<rrhEmpleado>)ViewBag.empleados)
+                            {
+                                <option value=@item.Id>@item.Codigo | @item.PrimerNombre  @item.SegundoNombre  @item.Apellidos </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnAsignar" value="@PropertiesBlo.btnAsignar" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

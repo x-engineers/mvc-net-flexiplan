@@ -1,0 +1,351 @@
+﻿* {
+    margin: 0;
+    padding: 0
+}
+body {
+    background: url('../Imagenes/fondo.jpg') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    opacity: 0.95;
+}
+
+.fondo {
+    border-radius: 20px;
+    box-shadow: 0 0 200px 20px #fffbfb;
+}
+.contenido-form {
+    padding: 0px 20px 0px 20px;
+}
+
+html {
+    height: 100%
+}
+
+p {
+    color: grey
+}
+
+#heading {
+    text-transform: uppercase;
+    color: #057bb8;
+    font-weight: normal
+}
+
+#msform {
+    text-align: center;
+    position: relative;
+    margin-top: 20px
+}
+
+    #msform fieldset {
+        background: white;
+        border: 0 none;
+        border-radius: 0.5rem;
+        box-sizing: border-box;
+        width: 100%;
+        margin: 0;
+        padding-bottom: 20px;
+        position: relative
+    }
+
+.form-card {
+    text-align: left
+}
+
+#msform fieldset:not(:first-of-type) {
+    display: none
+}
+
+#msform input, #msform select, #msform textarea {
+    /*padding: 8px 15px 8px 15px;*/
+    padding: 5px 10px 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 0px;
+    /*margin-bottom: 25px;*/
+    /*margin-bottom: 10px;*/
+    /*margin-top: 2px;*/
+    width: 100%;
+    box-sizing: border-box;
+    font-family: montserrat;
+    color: #2C3E50;
+    background-color: #ECEFF1;
+    font-size: 14px;
+    letter-spacing: 1px
+}
+
+    #msform input:focus,
+    #msform textarea:focus {
+        -moz-box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        border: 1px solid #f6bc16;
+        outline-width: 0
+    }
+
+#msform .action-button {
+    width: 100px;
+    background: #057bb8;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 0px 10px 5px;
+    float: right
+}
+
+    #msform .action-button:hover,
+    #msform .action-button:focus {
+        background-color: #6cbce4
+    }
+
+#msform .action-button-previous {
+    width: 100px;
+    background: #616161;
+    font-weight: bold;
+    color: white;
+    border: 0 none;
+    border-radius: 0px;
+    cursor: pointer;
+    padding: 10px 5px;
+    margin: 10px 5px 10px 0px;
+    float: right
+}
+
+    #msform .action-button-previous:hover,
+    #msform .action-button-previous:focus {
+        background-color: #000000
+    }
+
+.card {
+    z-index: 0;
+    border: none;
+    position: relative
+}
+
+.fs-title {
+    font-size: 20px;
+    color: #057bb8;
+    margin-bottom: 15px;
+    font-weight: normal;
+    text-align: left
+}
+
+.purple-text {
+    color: #037e0d;
+    font-weight: normal
+}
+
+.steps {
+    font-size: 15px;
+    color: gray;
+    margin-bottom: 10px;
+    font-weight: normal;
+    text-align: right
+}
+
+.fieldlabels {
+    color: gray;
+    text-align: left;
+    font-size:12px;
+}
+
+#progressbar {
+    margin-bottom: 30px;
+    overflow: hidden;
+    color: lightgrey;
+    width: 100%;
+}
+
+    #progressbar .active {
+        color: #0880c4
+    }
+
+    #progressbar li {
+        list-style-type: none;
+        font-size: 15px;
+        width: 33.33%;
+        float: left;
+        position: relative;
+        font-weight: 400
+    }
+
+    #progressbar #account:before {
+        font-family: FontAwesome;
+        content: "\f13e"
+    }
+
+    #progressbar #personal:before {
+        font-family: FontAwesome;
+        content: "\f0e6"
+    }
+
+    #progressbar #identidad:before {
+        font-family: FontAwesome;
+        content: "\f007"
+    }
+    
+    #progressbar #confirm:before {
+        font-family: FontAwesome;
+        content: "\f00c"
+    }
+
+    #progressbar li:before {
+        width: 50px;
+        height: 50px;
+        line-height: 45px;
+        display: block;
+        font-size: 20px;
+        color: #ffffff;
+        background: lightgray;
+        border-radius: 50%;
+        margin: 0 auto 10px auto;
+        padding: 2px
+    }
+
+    #progressbar li:after {
+        content: '';
+        width: 100%;
+        height: 2px;
+        background: lightgray;
+        position: absolute;
+        left: 0;
+        top: 25px;
+        z-index: -1
+    }
+
+    #progressbar li.active:before,
+    #progressbar li.active:after {
+        background: #0880c4
+    }
+
+.progress {
+    height: 10px
+}
+
+.progress-bar {
+    background-color: #f6bc16
+}
+
+.fit-image {
+    width: 100%;
+    object-fit: cover
+}
+
+.text-nota {
+    color: red !important;
+    font-weight: 500;
+    font-size: 10px;
+}
+.justticar {
+    text-align: justify;
+}
+
+.acepto_contrato {
+    left: 30%;
+    width: 280px;
+    margin: auto;
+}
+
+    .acepto_contrato label {
+        position: relative;
+        top: 15px;
+        float: left;
+        font-size: 12px;
+        font-weight: bold;
+        color: #333333;
+        cursor: pointer;
+    }
+
+/* ESTILO CHECKBOX*/
+.checkboxWrapper {
+    width: 60px;
+    height: 30px;
+    position: relative;
+    float: right;
+    top: 5px;
+    -webkit-border-radius: 60px;
+    -moz-border-radius: 60px;
+    border-radius: 60px;
+    background: #8230DF;
+}
+
+    .checkboxWrapper label {
+        position: absolute;
+        left: 33px;
+        top: 2px;
+        width: 26px;
+        height: 26px;
+        -webkit-border-radius: 28px;
+        -moz-border-radius: 28px;
+        border-radius: 28px;
+        background: #8230DF;
+        -webkit-transition: .2s;
+        -moz-transition: .2s;
+        -ms-transition: .2s;
+        -o-transition: .2s;
+        transition: .2s;
+        cursor: pointer;
+    }
+
+    .checkboxWrapper svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+
+        .checkboxWrapper svg path {
+            stroke: #fff;
+            stroke-linecap: round;
+            stroke-width: 4;
+            -webkit-transition: opacity 0.1s;
+            transition: opacity 0.1s;
+            fill: none;
+            -webkit-transition: stroke-dashoffset 0.2s;
+            transition: stroke-dashoffset 0.2s;
+        }
+
+    .checkboxWrapper .checkmark path {
+        opacity: 0;
+    }
+
+        .checkboxWrapper .checkmark path:first-child {
+            stroke-dashoffset: 27px;
+        }
+
+        .checkboxWrapper .checkmark path:last-child {
+            stroke-dashoffset: 11px;
+        }
+
+    .checkboxWrapper .cross path {
+        opacity: 1;
+        stroke-dashoffset: 0px;
+    }
+
+    .checkboxWrapper input[type=checkbox] {
+        display: none;
+    }
+
+        .checkboxWrapper input[type=checkbox]:not(:checked) + label {
+            left: 2px;
+            background: #fff;
+        }
+
+        .checkboxWrapper input[type=checkbox]:checked + label {
+            right: 2px;
+            background: #fff;
+        }
+
+            .checkboxWrapper input[type=checkbox]:checked + label .checkmark path {
+                opacity: 1;
+                stroke-dashoffset: 0px;
+            }
+
+            .checkboxWrapper input[type=checkbox]:checked + label .cross path {
+                opacity: 0;
+                stroke-dashoffset: 13px;
+            }

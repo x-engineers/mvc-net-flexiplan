@@ -1,0 +1,196 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Formulario</title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="~/Content/Imagenes/favicon.ico" type="image/x-icon" />
+
+    <link href="~/Content/plugins/validation/css/formValidation.css" rel="stylesheet" />
+    <link href="~/Content/plugins/bootstrap/css/bootstrap_4_3_1.min.css" rel="stylesheet" />
+    <link href="~/Content/tema/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/Content/Formulario/Formulario.css" rel="stylesheet" />
+
+
+    <script src="~/Content/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/Formulario/Formulario.js"></script>
+    <script src="~/Content/Formulario/zInput.js"></script>
+    <script src="~/Content/plugins/validation/js/formValidation.js"></script>
+    <script src="~/Content/plugins/validation/js/framework/bootstrap.min.js"></script>
+    <script src="~/Content/jquery.inputmask.bundle.js"></script>
+</head>
+<body class="fondo-img  ">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-11 col-sm-9 col-md-7 col-lg-6 col-xl-5 text-center p-0 mt-3 mb-2">
+                <div class="card px-0 pt-4 pb-0 mt-3 mb-3">
+                    <div class="contenido-form">
+                        <div>
+                            <img src="~/Content/Imagenes/logo.png" width="300" class="text-center" />
+                            <br /><br />
+                        </div>
+
+                        <h2 id="heading">Autorización de Buró Crediticio</h2>
+                        <p>Completa los siguientes pasos. <span class="text-nota">* Obligatorios</span></p>
+
+                        <form id="msform"  action="/Formulario/Save" method="post">
+                            <div class="text-center">
+                                <!-- progressbar -->
+                                <ul id="progressbar">
+                                    <li class="active" id="account"><strong>Datos</strong></li>
+                                    <li id="identidad"><strong>Identidad</strong></li>
+                                    <li id="confirm"><strong>Aceptación</strong></li>
+                                </ul>
+                            </div>
+
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div> <br> <!-- fieldsets -->
+                            <fieldset>
+                                <div class="form-card">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <h2 class="fs-title">Información según DUI:</h2>
+                                        </div>
+                                        <div class="col-5">
+                                            <h2 class="steps">Paso 1 - 3</h2>
+                                        </div>
+                                    </div>
+                               
+                                    <input type="hidden" name="Id" value="@ViewBag.Id" />
+
+                                    <div class="form-group">
+                                        <label class="fieldlabels">Nombres: <span class="text-nota">*</span></label>
+                                        <input class="form-control" id="BuroNombres" name="BuroNombres" type="text" maxlength="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">Apellidos: <span class="text-nota">*</span></label>
+                                        <input class="form-control" id="BuroApellidos" name="BuroApellidos" type="text" maxlength="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">Sexo: <span class="text-nota">*</span></label>
+                                        <select class="form-control" id="BuroGenero" name="BuroGenero">
+                                            <option value="M" selected>Hombre</option>
+                                            <option value="F">Mujer</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <input type="button" name="next" class="next action-button" value="Siguiente" />
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-card">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <h2 class="fs-title">Información Personal:</h2>
+                                        </div>
+                                        <div class="col-5">
+                                            <h2 class="steps">Paso 2 - 3</h2>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">DUI: <span class="text-nota">*</span></label>
+                                        <input class="form-control DUI" id="BuroDUI" name="BuroDUI" type="text" maxlength="10">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">NIT: <span class="text-nota">*</span></label>
+                                        <input class="form-control NIT" id="BuroNIT" name="BuroNIT" type="text" maxlength="17">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">Correo:</label>
+                                        <input class="form-control" id="BuroCorreo" name="BuroCorreo" type="text" maxlength="100">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="fieldlabels">Teléfono:</label>
+                                        <input class="form-control telefono" id="BuroTelefono" name="BuroTelefono" type="text" maxlength="9">
+                                    </div>
+                                </div> 
+                                <input type="button" name="next" class="next action-button" value="Siguiente" />
+                                <input type="button" name="previous" class="previous action-button-previous" value="Anterior" />
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-card">
+                                    <div class="row">
+                                        <div class="col-7">
+                                            <h2 class="fs-title">Aceptación de investigación:</h2>
+                                        </div>
+                                        <div class="col-5">
+                                            <h2 class="steps">Paso 3 - 3</h2>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <p class="justticar">
+                                                Yo, Por este medio autorizo a FLEXIPLAN. S.A DE CV para que consulte, acceda, investigue y
+                                                verifique, cuantas veces considere necesario, mi comportamiento e historial crediticio tanto con
+                                                personas naturales como jurídicas, incluyendo aquellas que recolectan, registran, procesan y
+                                                distribuyen datos referentes al historial crediticio de las personas, para sustentar el otorgamiento
+                                                de créditos. También lo autorizo a recopilv, mantener, administrar, tratar, transmitir v compartir
+                                                mi información creeticia e historial de crédito a 105 "entes económicos autorizados la
+                                                Superintendencia del Sistema Financiero y entre Las Agencias de información de Datos, según se
+                                                define en la Ley de Regulación de 105 Servicios de Información sobre el Historial Crédito ck las
+                                                personas y entidades financieras locales o extrameras cualquiera que sea el lugar en que estén
+                                                situados, y que tengan relación dentro los Ines negocio finulciero_ Esta autorización
+                                                contenida en este documento la Otorgo de forma expresa con la finalidad de que FLEXIPLAN S.A
+                                                DE CV. pueda cumplr las obligaciones o actividades principales o complementarias respecto de
+                                                los servicios me presta, previa o posteriormente a los sean permitidas por la Ley,
+                                                obligaciones contractuales o precontractuales, así Como para contacto, ubicacióm pubUcidad,
+                                                mensajería y que sean necesarios para dar cumplimiento a los fines directamente relacionados
+                                                con las operaciones contratadas.
+                                            </p>
+                                            <div class="row">
+                                                <div class="acepto_contrato">
+                                                    <label for="ckb_acepto">Acepto los términos y condiciones <span class="text-nota">*</span></label>
+
+                                                    <div class="checkboxWrapper">
+                                                        <input type="checkbox" name="ckb_acepto" id="ckb_acepto" value="true" />
+                                                        <label for="ckb_acepto">
+                                                            <svg class="checkmark" width="26" height="26">
+                                                                <path d="m12,20 l8,-11" style="stroke-dasharray: 27px; stroke: #057bb8;">
+                                                                </path>
+                                                                <path d="m12,20 l-5,-5" style="stroke-dasharray: 11px; stroke: #057bb8;">
+                                                                </path>
+                                                            </svg>
+                                                            <svg class="cross" width="26" height="26">
+                                                                <path d="m13,14 l-4,-4" style="stroke-dasharray: 13px; stroke: #757575;">
+                                                                </path>
+                                                                <path d="m13,14 l4,4" style="stroke-dasharray: 13px; stroke: #757575;">
+                                                                </path>
+                                                                <path d="m13,14 l-4,4" style="stroke-dasharray: 13px; stroke: #757575;">
+                                                                </path>
+                                                                <path d="m13,14 l4,-4" style="stroke-dasharray: 13px; stroke: #757575;">
+                                                                </path>
+                                                            </svg>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <br /><br /><br /><br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="button" id="btnEnviar" name="next" class="next action-button" value="Enviar" />
+                                <input type="button" name="previous" class="previous action-button-previous" value="Anterior" />
+                            </fieldset>
+                            <fieldset>
+                                <div class="form-card">
+                                    <h2 class="purple-text text-center"><strong>Datos enviados con éxito</strong></h2> <br>
+                                    <div class="row justify-content-center">
+                                        <div class="col-3"> <img src="~/Content/Imagenes/ok.png" class="fit-image"> </div>
+                                    </div> <br><br>
+                                    <div class="row justify-content-center">
+                                        <div class="col-7 text-center">
+                                            <h5 class="purple-text text-center">Gracias por tu tiempo!</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

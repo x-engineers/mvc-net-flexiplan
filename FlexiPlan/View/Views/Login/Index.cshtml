@@ -1,0 +1,89 @@
+﻿@using Model
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>CRM</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="~/Content/Imagenes/favicon.ico" type="image/x-icon" />
+
+    <!-- CSS -->
+    <link href="~/Content/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/validation/css/formValidation.css" rel="stylesheet" />
+    <link href="~/Content/tema/css/adminLTE.min.css" rel="stylesheet" />
+    <link href="~/Content/plugins/toastmessage/resources/css/jquery.toastmessage.css" rel="stylesheet" />
+
+    <!-- JS -->
+    <script src="~/Content/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+    <script src="~/Content/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/plugins/validation/js/formValidation.js"></script>
+    <script src="~/Content/plugins/validation/js/framework/bootstrap.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            @Scripts.Render("~/IE9")
+    <![endif]-->
+
+</head>
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <form action="/Login/Index" method="post">
+            <div class="panel panel-primary">
+                <div class="panel-heading text-center">
+                    <b style="color: #f39c12;">CRM</b>
+                </div>
+                <div class="panel-body">
+                    @Html.AntiForgeryToken()
+                    <div class="panel-heading bg-warning text-center">
+                        <br />
+                        <img src="~/Content/Imagenes/logo.png" class="user-image" style="width:70%; height:70%;" />
+                        <br /><br /><br />
+                    </div>
+                    <br />
+                    <div class="form-group has-feedback">
+                        <input type="text" class="form-control" name="user" autocomplete="off" placeholder="Usuario">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" name="pass" class="form-control" placeholder="Contraseña">
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="idEmpresa" class="form-control">
+                            @foreach (var item in (List<Empresa>)ViewBag.empresa)
+                            {
+                                <option value="@item.Id">@item.EmpresaDes</option>
+                            }
+                        </select>
+                        <span class="glyphicon glyphicon-tasks form-control-feedback"></span>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">Iniciar Sesión</button>
+                </div>
+            </div>
+        </form>
+    </div><!-- /.login-box -->
+
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        function Mensaje() {
+            if ('@string.IsNullOrWhiteSpace(ViewBag.Error)' != 'True')
+                { $().toastmessage('showErrorToast', '@ViewBag.Error'); }
+        }
+        Mensaje();
+        });
+    </script>
+
+
+    <!-- JS -->
+    <script src="~/Content/plugins/toastmessage/javascript/jquery.toastmessage.js"></script>
+    <script src="~/Content/plugins/fastclick/fastclick.min.js"></script>
+
+</body>
+</html>
+

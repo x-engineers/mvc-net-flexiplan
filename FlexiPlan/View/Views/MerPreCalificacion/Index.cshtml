@@ -1,0 +1,507 @@
+﻿@using Blo.Properties
+@using Model;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Scripts {
+    <script type='text/javascript'>
+        $(document).ready(function () {
+            var grid;
+            var idMedioContacto = 0;
+
+            //PERMITE LLENAR LOS CAMPOS CON SUS CORESPONDIENTES VALORES
+            function Calificar(e) {
+                $('a[href="#calificar"]').tab('show');// Activar pestaña
+                $("#Id").val(e.data.record.Id);
+                $("#Nombre").val(e.data.record.Nombre);
+                $("#Nombre").prop("disabled", true);
+                $("#Telefono").val(e.data.record.Telefono);
+                $("#Telefono").prop("disabled", true);
+                $("#Correo").val(e.data.record.Correo);
+                $("#Correo").prop("disabled", true);
+                $("#DescripcionOrigen").val(e.data.record.DescripcionOrigen);
+                $("#DescripcionOrigen").prop("disabled", true);
+                $("#IdCampania").val(e.data.record.IdCampania);
+                $("#IdCampania").change();
+                $("#IdCampania").prop("disabled", true);
+                $("#IdTipoVenta").val(e.data.record.IdTipoVenta);
+                $("#IdTipoVenta").change();
+                $("#IdTipoVenta").prop("disabled", true);
+                $("#IdMedioContacto").prop("disabled", true);
+                idMedioContacto = e.data.record.IdMedioContacto;    
+                $("#IdTipoMedio").val(e.data.record.IdTipoMedio);
+                $("#IdTipoMedio").change();
+                $("#IdTipoMedio").prop("disabled", true);
+                $("#Observacion").val(e.data.record.Observacion);
+                $("#Observacion").prop("disabled", true);
+
+                if (e.data.record.OrigenConctacto == "Campaña") {
+                    $("#campania").attr('checked', true);
+                }
+                else if (e.data.record.OrigenConctacto == "Referido") {
+                    $("#referido").attr('checked', true);
+                }
+                else
+                    $("#visita").attr('checked', true);
+
+                $("input[name='OrigenConctacto']").prop("disabled", true);
+
+
+                $("#URLFechaAcepto").val(formatDate(e.data.record.URLFechaAcepto, 'dd/mm/yyyy'));
+                $("#URLFechaAcepto").prop("disabled", true);
+                $("#BuroNombres").val(e.data.record.BuroNombres);
+                $("#BuroNombres").prop("disabled", true);
+                $("#BuroApellidos").val(e.data.record.BuroApellidos);
+                $("#BuroApellidos").prop("disabled", true);
+                $("#BuroGenero").val(e.data.record.BuroGenero);
+                $("#BuroGenero").prop("disabled", true);
+                $("#BuroDUI").val(e.data.record.BuroDUI);
+                $("#BuroDUI").prop("disabled", true);
+                $("#BuroNIT").val(e.data.record.BuroNIT);
+                $("#BuroNIT").prop("disabled", true);
+                $("#BuroCorreo").val(e.data.record.BuroCorreo);
+                $("#BuroCorreo").prop("disabled", true);
+                $("#BuroTelefono").val(e.data.record.BuroTelefono);
+                $("#BuroTelefono").prop("disabled", true);
+
+                $("#myModal").modal("show");
+            }
+
+
+
+            //EVENTO PARA ELIMINAR UN REGISTRO
+            function Remove(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../MerOportunidad/Remove", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                grid.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+
+
+
+            //AQUI SE ESTABLACEN LAS PROPIEDADES Y EVENTOS DEL GRID
+            grid = $("#gridOportunidad").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+                columns: [
+                    { field: "Nombre", title: "Nombre", sortable: true },
+                    { field: "Telefono", title: "Teléfono", sortable: true },
+                    { field: "Correo", title: "Correo", sortable: true },
+                    { field: "OrigenConctacto", title: "Origen de Conctacto", sortable: true },
+                    { field: "interes", title: "Tipo de Venta", sortable: true },
+                    { field: "MedioContacto", title: "Medio de Contacto", sortable: true },
+                    { title: "", field: "Calificar", width: 42, type: "icon", icon: "glyphicon-check btn btn-primary btn-xs", tooltip: "Calificar", events: { "click": Calificar } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+
+            //EVENTOS DE BOTONES
+            function Search() {
+                grid.reload({ page: 1, searchString: $("#txtBuscar").val() });
+             }
+
+            $('#txtBuscar').keypress(function (e) {
+                if (e.which == 13) {
+                    Search();
+                }
+            });
+
+            $("#btnBuscar").on("click", Search);
+
+
+            //VALIDACIONES DEL FORMULARIO
+            $('#formOportunidad').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Calificacion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    ComentarioCalificacion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+
+                }
+            })
+
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    if ($("#ComentarioCalificacion").val() != "") {
+                        //Envio de datos
+                        $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize() })
+                            .done(function (data, textStatus, jqXHR) {
+                                $("#myModal").modal("hide");
+                                Mensajes(data.mensaje);
+                                grid.reload();
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $("#myModal").modal("hide");
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    } else {
+                        $().toastmessage('showErrorToast', "El comentario es requerido");
+                    }
+
+                });
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModal').on('hide.bs.modal', function () {
+                $('#formOportunidad').trigger("reset"); // Resetea los valores de todos campos
+                $("#formOportunidad").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+
+            // evento clic de los radio button
+            $("#campania").click(function () {
+                $("#IdCampania").prop("disabled", false);
+                $("#DescripcionOrigen").val("");
+                $("#DescripcionOrigen").prop("disabled", true);
+            })
+            $("#referido").click(function () {
+                $("#DescripcionOrigen").prop("disabled", false);
+                $("#IdCampania").prop("disabled", true);
+                $("#IdCampania").val("");
+                $("#IdCampania").change();
+            })
+            $("#visita").click(function () {
+                $("#DescripcionOrigen").prop("disabled", false);
+                $("#IdCampania").prop("disabled", true);
+                $("#IdCampania").val("");
+                $("#IdCampania").change();
+            })
+
+            $("#IdTipoMedio").change(function () {
+                if ($("#IdTipoMedio").val() != "" && $("#IdTipoMedio").val() != null) {
+                    $.ajax({
+                        url: "../MerOportunidad/GetMedioContacto", type: "POST",
+                        data: {
+                            idTipoMedio: $("#IdTipoMedio").val()
+                        }
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#IdMedioContacto option").remove();
+                            $.each(data.datos, function (key, registro) {
+                                if (idMedioContacto == registro.Id)
+                                    $("#IdMedioContacto").append('<option selected value=' + registro.Id + '>' + registro.MedioContacto + '</option>');
+                                else
+                                    $("#IdMedioContacto").append('<option  value=' + registro.Id + '>' + registro.MedioContacto + '</option>');
+                            });
+                            $("#IdMedioContacto").change();
+             
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                        });
+                }
+            });
+
+             //SELECT2 PERSONALIZADO TIPO TABLA
+             $('.s2Grid_1').select2({
+                 templateResult: function (data) {
+                     if (data.text === 'Seleccione ...')
+                         return $(
+                             '<div class="row" style="font-weight: bold;">' +
+                             '<div class="col-md-4"> Código </div>' +
+                             '<div class="col-md-8"> Nombre </div>' +
+                             '</div>'
+                         );
+                     var r = data.text.split('|');
+                     var $result = $(
+                         '<div class="row">' +
+                         '<div class="col-md-4">' + r[0] + '</div>' +
+                         '<div class="col-md-8">' + r[1] + '</div>' +
+                         '</div>'
+                     );
+                     return $result;
+                 },
+                 templateSelection: function (data) {
+                     if (data.text === 'Seleccione ...')
+                         return $(
+                             '<div class="row">' +
+                             '<div class="col-md-4">' + data.text + '</div>' +
+                             '<div class="col-md-8"></div>' +
+                             '</div>'
+                         );
+                     var r = data.text.split('|');
+                     var $result = $(
+                         '<div class="row">' +
+                         '<div class="col-md-4">' + r[0] + '</div>' +
+                         '<div class="col-md-8">' + r[1] + '</div>' +
+                         '</div>'
+                     );
+                     return $result;
+                 }
+            });
+
+
+         });
+    </script>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        PRE-CALIFICACIÓN
+        <small>COMITÉ DE CRÉDITO</small>
+    </h1>
+</section>
+
+
+<!-- Main content -->
+<section class="content" style="padding-top:0; padding-bottom:0; ">
+    <div class="box box-primary" style="margin-bottom:0; ">
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group pull-right">
+                        <input type="text" id="txtBuscar" class="form-control" placeholder="Buscar ...">
+                        <span class="input-group-btn">
+                            <button type="submit" id="btnBuscar" class="btn btn-primary"><span class='glyphicon glyphicon glyphicon-search'></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive" style="overflow-y: hidden; ">
+                @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                <table id="gridOportunidad" data-source="@Url.Action("GetOportunidad")"></table>
+            </div>
+
+        </div>
+    </div><!-- /.box -->
+</section><!-- /.content -->
+<!--MODAL-->
+<div id='myModal' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog">
+        <form id="formOportunidad" action="/MerPreCalificacion/Save" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    Calificar
+                </div>
+                <div class="panel-body">
+
+                    <input id="Id" type="hidden" name="Id" value="">
+
+                    <!-- /.nav-tabs-custom" -->
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li><a href="#calificar" data-toggle="tab">Calificar</a></li>
+                            <li><a href="#oportunidad" data-toggle="tab">Oportunidad</a></li>
+                            <li><a href="#buro" data-toggle="tab">Buró Crediticio</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="calificar">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="Calificacion">Calificación<span class="text-red">*</span>: </label>
+                                            <select class="form-control" id="Calificacion" name="Calificacion">
+                                                <option value="Aprobado" selected style="background-color:mediumspringgreen;">Aprobado</option>
+                                                <option value="Condicionado" style="background-color:orange;">Condicionado</option>
+                                                <option value="Denegado" style="background-color:red;">Denegado</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="ComentarioCalificacion">Comentario<span class="text-red">*</span>: </label>
+                                            <textarea class="form-control" id="ComentarioCalificacion" name="ComentarioCalificacion" type="text" maxlength="1000"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="oportunidad">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="Nombre">Nombre:</label>
+                                            <input class="form-control" id="Nombre" name="Nombre" type="text" maxlength="200">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="Telefono">Teléfono:</label>
+                                            <input class="form-control telefono" id="Telefono" name="Telefono" type="text" maxlength="20">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="Correo">Correo:</label>
+                                            <input class="form-control" id="Correo" name="Correo" type="text" maxlength="60">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Interes: </label>
+                                            <select class="form-control select2-single" name="IdTipoVenta" id="IdTipoVenta">
+                                                @foreach (crmTipoVenta item in ViewBag.tipoVenta)
+                                                {
+                                                    <option value=@item.Id>@item.Descripcion</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Tipo de Medio:</label>
+                                            <select class="form-control select2-single" name="IdTipoMedio" id="IdTipoMedio">
+                                                @foreach (crmTipoMedio item in ViewBag.tipoMedio)
+                                                {
+                                                    <option value=@item.Id>@item.TipoMedio</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Medio:</label>
+                                            <select class="form-control select2-single" name="IdMedioContacto" id="IdMedioContacto"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label>Origen:</label>
+                                        <div class="col-md-12">
+                                            <div class="form-group  has-feedback">
+                                                <input type="radio" id="campania" name="OrigenConctacto" checked value="Campaña"> Campaña
+                                                <input type="radio" id="referido" name="OrigenConctacto" value="Referido"> Referido
+                                                <input type="radio" id="visita" name="OrigenConctacto" value="Visita Directa"> Visita Directa
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="DescripcionOrigen">Descripción del Origen:</label>
+                                            <input class="form-control" id="DescripcionOrigen" name="DescripcionOrigen" type="text" maxlength="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="IdCampania">Campaña:</label>
+                                            <select id="IdCampania" name="IdCampania" class="s2Grid_1" style="width:100%">
+                                                <option value="">Seleccione ...</option>
+                                                @foreach (crmCampania item in (List<crmCampania>)ViewBag.campania)
+                                                {
+                                                    <option value=@item.Id>@item.Codigo | @item.Nombre</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label for="Observacion">Observacion:</label>
+                                            <textarea class="form-control" id="Observacion" name="Observacion" type="text" maxlength="300"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="buro">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="URLFechaAcepto">Fecha Aceptó:</label>
+                                                    <input class="form-control" id="URLFechaAcepto" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroNombres">Nombres:</label>
+                                                    <input class="form-control" id="BuroNombres" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroApellidos">Apellidos:</label>
+                                                    <input class="form-control" id="BuroApellidos" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroGenero">Sexo:</label>
+                                                    <select class="form-control" id="BuroGenero">
+                                                        <option value="M" selected>Hombre</option>
+                                                        <option value="F">Mujer</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroDUI">DUI:</label>
+                                                    <input class="form-control" id="BuroDUI" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroNIT">NIT:</label>
+                                                    <input class="form-control" id="BuroNIT" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroCorreo">Correo:</label>
+                                                    <input class="form-control" id="BuroCorreo" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="BuroTelefono">Teléfono:</label>
+                                                    <input class="form-control" id="BuroTelefono" type="text" maxlength="100">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <!-- /.tab-content -->
+                    </div> <!-- /.nav-tabs-custom -->
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnGuardar" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F289CB55-5944-43A8-8366-786605705E34}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Model</RootNamespace>
+    <AssemblyName>Model</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <PublishUrl>publicar\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.OracleClient" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseEntity.cs" />
+    <Compile Include="CRM\crmCampania.cs" />
+    <Compile Include="CRM\crmCampaniaColorProducto.cs" />
+    <Compile Include="CRM\crmCampaniaProdPartes.cs" />
+    <Compile Include="CRM\crmCampaniaProdRegalia.cs" />
+    <Compile Include="CRM\crmCampaniaProducto.cs" />
+    <Compile Include="CRM\crmCampaniaSucursal.cs" />
+    <Compile Include="CRM\crmContacto.cs" />
+    <Compile Include="CRM\crmContactoArchivos.cs" />
+    <Compile Include="CRM\crmContactoDireccion.cs" />
+    <Compile Include="CRM\crmContactoInformacionEco.cs" />
+    <Compile Include="CRM\crmContactoReferencia.cs" />
+    <Compile Include="CRM\crmMedioContacto.cs" />
+    <Compile Include="CRM\crmNivelEducacion.cs" />
+    <Compile Include="CRM\crmOportunidad.cs" />
+    <Compile Include="CRM\crmProfesion.cs" />
+    <Compile Include="CRM\crmTasaInteres.cs" />
+    <Compile Include="CRM\crmTipoCredito.cs" />
+    <Compile Include="CRM\crmTipoDireccion.cs" />
+    <Compile Include="CRM\crmTipoMedio.cs" />
+    <Compile Include="CRM\crmTipoPropiedad.cs" />
+    <Compile Include="CRM\crmTipoReferencia.cs" />
+    <Compile Include="CRM\crmTipoVenta.cs" />
+    <Compile Include="CRM\crmTipoVivienda.cs" />
+    <Compile Include="CRM\crmVentaEnc.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="ERP\ActivoFijo\ActAniosUso.cs" />
+    <Compile Include="ERP\ActivoFijo\ActivoFijo.cs" />
+    <Compile Include="ERP\CuentasxC\cxcTipoTransaccion.cs" />
+    <Compile Include="ERP\CuentasxC\cxcTransacciones.cs" />
+    <Compile Include="ERP\CuentasxC\cxcTransaccionesAplicadas.cs" />
+    <Compile Include="ERP\CuentasxC\CxcTransaccionesCentroCosto.cs" />
+    <Compile Include="ERP\CuentasxC\CxcTransaccionesContable.cs" />
+    <Compile Include="ERP\CuentasxC\cxpQuedanDet.cs" />
+    <Compile Include="ERP\CuentasxC\cxpQuedanEnc.cs" />
+    <Compile Include="ERP\CuentasxC\cxpTipoTransaccion.cs" />
+    <Compile Include="ERP\CuentasxC\cxpTransacciones.cs" />
+    <Compile Include="ERP\CuentasxC\cxpTransaccionesAplicadas.cs" />
+    <Compile Include="ERP\CuentasxC\CxpTransaccionesCentroCosto.cs" />
+    <Compile Include="ERP\CuentasxC\CxpTransaccionesContable.cs" />
+    <Compile Include="ERP\Inventario\invactivodet.cs" />
+    <Compile Include="ERP\Inventario\invactivoenc.cs" />
+    <Compile Include="ERP\Inventario\InvClase.cs" />
+    <Compile Include="ERP\Inventario\InvClasif.cs" />
+    <Compile Include="ERP\Inventario\InvColor.cs" />
+    <Compile Include="ERP\Inventario\InvCombo.cs" />
+    <Compile Include="ERP\Inventario\InvCondicionPago.cs" />
+    <Compile Include="ERP\Inventario\InvCostoDescarga.cs" />
+    <Compile Include="ERP\Inventario\InvDescDet.cs" />
+    <Compile Include="ERP\Inventario\InvDescEnc.cs" />
+    <Compile Include="ERP\Inventario\InvDivision.cs" />
+    <Compile Include="ERP\Inventario\InvEstadoParte.cs" />
+    <Compile Include="ERP\Inventario\InvEstadoProducto.cs" />
+    <Compile Include="ERP\Inventario\InvExistencia.cs" />
+    <Compile Include="ERP\Inventario\InvFisDet.cs" />
+    <Compile Include="ERP\Inventario\InvFisEnc.cs" />
+    <Compile Include="ERP\Inventario\InvGrupo.cs" />
+    <Compile Include="ERP\Inventario\InvListaPrecioDet.cs" />
+    <Compile Include="ERP\Inventario\InvListaPrecioEnc.cs" />
+    <Compile Include="ERP\Inventario\InvLote.cs" />
+    <Compile Include="ERP\Inventario\InvLoteDet.cs" />
+    <Compile Include="ERP\Inventario\InvMarca.cs" />
+    <Compile Include="ERP\Inventario\InvMedida.cs" />
+    <Compile Include="ERP\Inventario\InvMetodoCalculo.cs" />
+    <Compile Include="ERP\Inventario\InvMetodoPrecio.cs" />
+    <Compile Include="ERP\Inventario\InvModelo.cs" />
+    <Compile Include="ERP\Inventario\InvMovDet.cs" />
+    <Compile Include="ERP\Inventario\InvMovDetTalla.cs" />
+    <Compile Include="ERP\Inventario\InvMovEnc.cs" />
+    <Compile Include="ERP\Inventario\InvMovEncCentroCosto.cs" />
+    <Compile Include="ERP\Inventario\InvMovEncContable.cs" />
+    <Compile Include="ERP\Inventario\InvMovEncCostosDescarga.cs" />
+    <Compile Include="ERP\Inventario\InvMovEncImpuesto.cs" />
+    <Compile Include="ERP\Inventario\InvMovEncPago.cs" />
+    <Compile Include="ERP\Inventario\InvNivelPrecio.cs" />
+    <Compile Include="ERP\Inventario\InvPago.cs" />
+    <Compile Include="ERP\Inventario\InvPlanUMDet.cs" />
+    <Compile Include="ERP\Inventario\InvPlanUMEnc.cs" />
+    <Compile Include="ERP\Inventario\InvProducto.cs" />
+    <Compile Include="ERP\Inventario\InvProductoPartes.cs" />
+    <Compile Include="ERP\Inventario\InvRubro.cs" />
+    <Compile Include="ERP\Inventario\InvTalla.cs" />
+    <Compile Include="ERP\Inventario\InvTipoDocumento.cs" />
+    <Compile Include="ERP\Inventario\InvTipoMov.cs" />
+    <Compile Include="ERP\Inventario\InvTipoProrrateo.cs" />
+    <Compile Include="ERP\Inventario\InvValoracion.cs" />
+    <Compile Include="ERP\Otros\AppProject.cs" />
+    <Compile Include="ERP\Otros\AsignacionSolicitud.cs" />
+    <Compile Include="ERP\Otros\Asociacion.cs" />
+    <Compile Include="ERP\Otros\Banco.cs" />
+    <Compile Include="ERP\Otros\BanConciliacion.cs" />
+    <Compile Include="ERP\Otros\BaseDetalleImpuesto.cs" />
+    <Compile Include="ERP\Otros\Catalogo.cs" />
+    <Compile Include="ERP\Otros\CatalogoCC.cs" />
+    <Compile Include="ERP\Otros\CatalogoOpcion.cs" />
+    <Compile Include="ERP\Otros\CatalogoxCatalogoCC.cs" />
+    <Compile Include="ERP\Otros\Categoria.cs" />
+    <Compile Include="ERP\Otros\Ciudades.cs" />
+    <Compile Include="ERP\Otros\ClaseActivo.cs" />
+    <Compile Include="ERP\Otros\ClasifEFE.cs" />
+    <Compile Include="ERP\Otros\ClasificaCliente.cs" />
+    <Compile Include="ERP\Otros\Cliente.cs" />
+    <Compile Include="ERP\Otros\Config.cs" />
+    <Compile Include="ERP\Otros\ConOrigenDiarioDet.cs" />
+    <Compile Include="ERP\Otros\ConOrigenDiarioEnc.cs" />
+    <Compile Include="ERP\Otros\ConPresupuestoDet.cs" />
+    <Compile Include="ERP\Otros\ConPresupuestoEnc.cs" />
+    <Compile Include="ERP\Otros\CorteCaja.cs" />
+    <Compile Include="ERP\Otros\CortePago.cs" />
+    <Compile Include="ERP\Otros\CreditoDet.cs" />
+    <Compile Include="ERP\Otros\CreditoEnc.cs" />
+    <Compile Include="ERP\Otros\CredNoEnc.cs" />
+    <Compile Include="ERP\Otros\CriterioCotiza.cs" />
+    <Compile Include="ERP\Otros\CuentaBanco.cs" />
+    <Compile Include="ERP\Otros\DeclaracionIG.cs" />
+    <Compile Include="ERP\Otros\Departamento.cs" />
+    <Compile Include="ERP\Otros\Depreciacion.cs" />
+    <Compile Include="ERP\Otros\DetalleImpuesto.cs" />
+    <Compile Include="ERP\Otros\DeudaExterna.cs" />
+    <Compile Include="ERP\Otros\Deudor.cs" />
+    <Compile Include="ERP\Otros\DiarioDet.cs" />
+    <Compile Include="ERP\Otros\DiarioEnc.cs" />
+    <Compile Include="ERP\Otros\Division.cs" />
+    <Compile Include="ERP\Otros\Documento.cs" />
+    <Compile Include="ERP\Otros\DocumentoSucursal.cs" />
+    <Compile Include="ERP\Otros\Ejercicio.cs" />
+    <Compile Include="ERP\Otros\EstadoAsignacion.cs" />
+    <Compile Include="ERP\Otros\EstadoCivil.cs" />
+    <Compile Include="ERP\Otros\Estados.cs" />
+    <Compile Include="ERP\Otros\EstResConfig.cs" />
+    <Compile Include="ERP\Otros\EstResultado.cs" />
+    <Compile Include="ERP\Otros\Filtro.cs" />
+    <Compile Include="ERP\Otros\FormaPago.cs" />
+    <Compile Include="ERP\Otros\FormaPagoTarjeta.cs" />
+    <Compile Include="ERP\Otros\FTLocks.cs" />
+    <Compile Include="ERP\Otros\FTLog.cs" />
+    <Compile Include="ERP\Otros\General.cs" />
+    <Compile Include="ERP\Otros\Idioma.cs" />
+    <Compile Include="ERP\Otros\Inactivos.cs" />
+    <Compile Include="ERP\Otros\IvarptBase.cs" />
+    <Compile Include="ERP\Otros\Lista.cs" />
+    <Compile Include="ERP\Otros\LugarTrabajo.cs" />
+    <Compile Include="ERP\Otros\Moneda.cs" />
+    <Compile Include="ERP\Otros\MonedaDenominacion.cs" />
+    <Compile Include="ERP\Otros\MovCaja.cs" />
+    <Compile Include="ERP\Otros\MovimientoBanco.cs" />
+    <Compile Include="ERP\Otros\Multimoneda.cs" />
+    <Compile Include="ERP\Otros\OrdenarCompra.cs" />
+    <Compile Include="ERP\Otros\Paises.cs" />
+    <Compile Include="ERP\Otros\Parentezco.cs" />
+    <Compile Include="ERP\Otros\Parientes.cs" />
+    <Compile Include="ERP\Otros\PlanImpuesto.cs" />
+    <Compile Include="ERP\Otros\PlanXDetalleImpuesto.cs" />
+    <Compile Include="ERP\Otros\POSTarjeta.cs" />
+    <Compile Include="ERP\Otros\PresupConfigDet.cs" />
+    <Compile Include="ERP\Otros\PresupConfigEnc.cs" />
+    <Compile Include="ERP\Otros\Presupuesto.cs" />
+    <Compile Include="ERP\Otros\Prioridad.cs" />
+    <Compile Include="ERP\Otros\ProgramaCxP.cs" />
+    <Compile Include="ERP\Otros\Proyecto.cs" />
+    <Compile Include="ERP\Otros\PuntoVenta.cs" />
+    <Compile Include="ERP\Otros\Ratio.cs" />
+    <Compile Include="ERP\Otros\RetiroEmpleado.cs" />
+    <Compile Include="ERP\Otros\rptFiltros.cs" />
+    <Compile Include="ERP\Otros\rptMayAux.cs" />
+    <Compile Include="ERP\Otros\SaldoBanco.cs" />
+    <Compile Include="ERP\Otros\SaldoCC.cs" />
+    <Compile Include="ERP\Otros\SaldoConta.cs" />
+    <Compile Include="ERP\Otros\SolicitudDet.cs" />
+    <Compile Include="ERP\Otros\SolicitudEnc.cs" />
+    <Compile Include="ERP\Otros\SolicitudExt.cs" />
+    <Compile Include="ERP\Otros\Status.cs" />
+    <Compile Include="ERP\Otros\Tarjeta.cs" />
+    <Compile Include="ERP\Otros\TipoAbono.cs" />
+    <Compile Include="ERP\Otros\TipoActividad.cs" />
+    <Compile Include="ERP\Otros\TipoActivo.cs" />
+    <Compile Include="ERP\Otros\TipoAhorro.cs" />
+    <Compile Include="ERP\Otros\TipoCredito.cs" />
+    <Compile Include="ERP\Otros\TipoCuenta.cs" />
+    <Compile Include="ERP\Otros\TipoExterno.cs" />
+    <Compile Include="ERP\Otros\TipoMovBanco.cs" />
+    <Compile Include="ERP\Otros\TipoMovCaja.cs" />
+    <Compile Include="ERP\Otros\TipoMovIVA.cs" />
+    <Compile Include="ERP\Otros\TipoOrden.cs" />
+    <Compile Include="ERP\Otros\TipoPartida.cs" />
+    <Compile Include="ERP\Otros\TipoSucursal.cs" />
+    <Compile Include="ERP\Otros\TipoUsoOrden.cs" />
+    <Compile Include="ERP\Otros\Traduccion.cs" />
+    <Compile Include="ERP\RecursosHumanos\rrhCargo.cs" />
+    <Compile Include="ERP\RecursosHumanos\rrhClaseEmpleado.cs" />
+    <Compile Include="ERP\RecursosHumanos\rrhEmpleado.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Model.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Seguridad\AccesoUsuario.cs" />
+    <Compile Include="Seguridad\crmLogAuditoria.cs" />
+    <Compile Include="Seguridad\crmParametro.cs" />
+    <Compile Include="Seguridad\Empresa.cs" />
+    <Compile Include="Seguridad\Meses.cs" />
+    <Compile Include="Seguridad\opcion.cs" />
+    <Compile Include="Seguridad\PerfilDet.cs" />
+    <Compile Include="Seguridad\PerfilEnc.cs" />
+    <Compile Include="Seguridad\Periodo.cs" />
+    <Compile Include="Seguridad\Sucursal.cs" />
+    <Compile Include="Seguridad\Usuario.cs" />
+    <Compile Include="SQLBDEntities.cs" />
+    <Compile Include="Sql_view\vwInvListaProductoPartes.cs" />
+    <Compile Include="Sql_view\vwListaProductos.cs" />
+    <Compile Include="Sql_view\vwrptCrmContacto.cs" />
+    <Compile Include="Sql_view\vwrptCrmContactoDirecciones.cs" />
+    <Compile Include="Sql_view\vwrptCrmContactoInformacionEco.cs" />
+    <Compile Include="Sql_view\vwrptCrmContactoReferencias.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="Model.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Model.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model.edmx.diagram">
+      <DependentUpon>Model.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 y x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Sql_fn\" />
+    <Folder Include="Sql_sp\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Model.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>Model.edmx</DependentUpon>
+      <LastGenOutput>Model.Context.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Habilite la restauración del paquete NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

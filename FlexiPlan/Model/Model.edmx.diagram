@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d91879e39f934213b3e1718cfe68d9d2" Name="Diagram1">
+        <EntityTypeShape EntityType="Model.AccesoUsuario" Width="1.5" PointX="14.25" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ActAniosUso" Width="1.5" PointX="0.75" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ActivoFijo" Width="1.5" PointX="27.75" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AppProject" Width="1.5" PointX="2.75" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Asociacion" Width="1.5" PointX="8.25" PointY="20.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Banco" Width="1.5" PointX="6.75" PointY="26.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.BanConciliacion" Width="1.5" PointX="5.25" PointY="41.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.BaseDetalleImpuesto" Width="1.5" PointX="4.75" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Catalogo" Width="1.5" PointX="6.75" PointY="29.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CatalogoCC" Width="1.5" PointX="9" PointY="61.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CatalogoOpcion" Width="1.5" PointX="12" PointY="28" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CatalogoxCatalogoCC" Width="1.5" PointX="11.25" PointY="54.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Categoria" Width="1.5" PointX="6.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Ciudades" Width="1.5" PointX="0.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ClaseActivo" Width="1.5" PointX="11.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ClasifEFE" Width="1.5" PointX="2.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ClasificaCliente" Width="1.5" PointX="14.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Cliente" Width="1.5" PointX="3" PointY="17.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Config" Width="1.5" PointX="14.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ConOrigenDiarioDet" Width="1.5" PointX="16.75" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ConOrigenDiarioEnc" Width="1.5" PointX="16.75" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ConPresupuestoDet" Width="1.5" PointX="16.75" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ConPresupuestoEnc" Width="1.5" PointX="16.75" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CorteCaja" Width="1.5" PointX="7.5" PointY="70.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CortePago" Width="1.5" PointX="6" PointY="21.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CreditoDet" Width="1.5" PointX="16.5" PointY="34.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CreditoEnc" Width="1.5" PointX="8.25" PointY="39.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CredNoEnc" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CriterioCotiza" Width="1.5" PointX="18.75" PointY="14.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampania" Width="1.5" PointX="29" PointY="26.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampaniaColorProducto" Width="1.5" PointX="31.25" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampaniaProdPartes" Width="1.5" PointX="33.5" PointY="44.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampaniaProdRegalia" Width="1.5" PointX="33.5" PointY="48.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampaniaProducto" Width="1.5" PointX="31.25" PointY="44.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmCampaniaSucursal" Width="1.5" PointX="31.25" PointY="39.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmContacto" Width="1.5" PointX="22" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmContactoArchivos" Width="1.5" PointX="24.25" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmContactoDireccion" Width="1.5" PointX="27.25" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmContactoInformacionEco" Width="1.5" PointX="24.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmContactoReferencia" Width="1.5" PointX="24.25" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmLogAuditoria" Width="1.5" PointX="18.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmMedioContacto" Width="1.5" PointX="32" PointY="24" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmNivelEducacion" Width="1.5" PointX="19.75" PointY="12.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmOportunidad" Width="1.5" PointX="29" PointY="32.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmParametro" Width="1.5" PointX="24.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmProfesion" Width="1.5" PointX="19.75" PointY="9.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTasaInteres" Width="1.5" PointX="24.75" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoCredito" Width="1.5" PointX="18.75" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoDireccion" Width="1.5" PointX="25" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoMedio" Width="1.5" PointX="29.75" PointY="24.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoPropiedad" Width="1.5" PointX="22" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoReferencia" Width="1.5" PointX="22" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoVenta" Width="1.5" PointX="26.75" PointY="33" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmTipoVivienda" Width="1.5" PointX="25" PointY="20.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.crmVentaEnc" Width="1.5" PointX="33.75" PointY="26.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CuentaBanco" Width="1.5" PointX="9" PointY="28.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxcTipoTransaccion" Width="1.5" PointX="24.75" PointY="26.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxcTransacciones" Width="1.5" PointX="29.75" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxcTransaccionesAplicadas" Width="1.5" PointX="32" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CxcTransaccionesCentroCosto" Width="1.5" PointX="23.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CxcTransaccionesContable" Width="1.5" PointX="0.75" PointY="30.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxpQuedanDet" Width="1.5" PointX="16.5" PointY="40.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxpQuedanEnc" Width="1.5" PointX="5.25" PointY="36" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxpTipoTransaccion" Width="1.5" PointX="25.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxpTransacciones" Width="1.5" PointX="27.75" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.cxpTransaccionesAplicadas" Width="1.5" PointX="30" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CxpTransaccionesCentroCosto" Width="1.5" PointX="32.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CxpTransaccionesContable" Width="1.5" PointX="32.75" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Departamento" Width="1.5" PointX="31.75" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Depreciacion" Width="1.5" PointX="30" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DetalleImpuesto" Width="1.5" PointX="0.75" PointY="13.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DeudaExterna" Width="1.5" PointX="8.25" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Deudor" Width="1.5" PointX="14.25" PointY="59.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DiarioDet" Width="1.5" PointX="7.5" PointY="52" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DiarioEnc" Width="1.5" PointX="5.25" PointY="46.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Division" Width="1.5" PointX="32.75" PointY="19.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Documento" Width="1.5" PointX="14.25" PointY="54.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DocumentoSucursal" Width="1.5" PointX="34.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Ejercicio" Width="1.5" PointX="0.75" PointY="42.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Empresa" Width="1.5" PointX="34.75" PointY="5.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.EstadoCivil" Width="1.5" PointX="19.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Estados" Width="1.5" PointX="33.75" PointY="16.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.EstResConfig" Width="1.5" PointX="9" PointY="9" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.EstResultado" Width="1.5" PointX="0.75" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FormaPago" Width="1.5" PointX="34.75" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FormaPagoTarjeta" Width="1.5" PointX="34.75" PointY="19.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FTLog" Width="1.5" PointX="34.75" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.General" Width="1.5" PointX="24.75" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Idioma" Width="1.5" PointX="35.75" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Inactivos" Width="1.5" PointX="11.25" PointY="18.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.invactivodet" Width="1.5" PointX="35.75" PointY="26.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.invactivoenc" Width="1.5" PointX="35.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvClase" Width="1.5" PointX="18" PointY="53.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvClasif" Width="1.5" PointX="18" PointY="56" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvColor" Width="1.5" PointX="15" PointY="24.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvCombo" Width="1.5" PointX="35.75" PointY="32.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvCondicionPago" Width="1.5" PointX="35.75" PointY="36.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvCostoDescarga" Width="1.5" PointX="36.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvDescDet" Width="1.5" PointX="20.5" PointY="52" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvDescEnc" Width="1.5" PointX="7.5" PointY="74.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvDivision" Width="1.5" PointX="36.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvEstadoParte" Width="1.5" PointX="36.75" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvEstadoProducto" Width="1.5" PointX="36.75" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvExistencia" Width="1.5" PointX="17.25" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvFisDet" Width="1.5" PointX="19.5" PointY="40.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvFisEnc" Width="1.5" PointX="11.25" PointY="41.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvGrupo" Width="1.5" PointX="18" PointY="59" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvListaPrecioDet" Width="1.5" PointX="24.75" PointY="59.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvListaPrecioEnc" Width="1.5" PointX="22.5" PointY="59.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvLote" Width="1.5" PointX="14.75" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvLoteDet" Width="1.5" PointX="17" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMarca" Width="1.5" PointX="18" PointY="61.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMedida" Width="1.5" PointX="18" PointY="64.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMetodoCalculo" Width="1.5" PointX="36.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMetodoPrecio" Width="1.5" PointX="36.75" PointY="21.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvModelo" Width="1.5" PointX="37.75" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovDet" Width="1.5" PointX="22.5" PointY="35.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovDetTalla" Width="1.5" PointX="24.75" PointY="42" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEnc" Width="1.5" PointX="14.25" PointY="34" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEncCentroCosto" Width="1.5" PointX="37.75" PointY="24.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEncContable" Width="1.5" PointX="37.75" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEncCostosDescarga" Width="1.5" PointX="37.75" PointY="34.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEncImpuesto" Width="1.5" PointX="37.75" PointY="38.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvMovEncPago" Width="1.5" PointX="38.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvNivelPrecio" Width="1.5" PointX="24.75" PointY="38.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvPago" Width="1.5" PointX="8.25" PointY="80.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvPlanUMDet" Width="1.5" PointX="3" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvPlanUMEnc" Width="1.5" PointX="0.75" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvProducto" Width="1.5" PointX="20.25" PointY="56.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvProductoPartes" Width="1.5" PointX="31.25" PointY="50.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvRubro" Width="1.5" PointX="18" PointY="67.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvTalla" Width="1.5" PointX="15" PointY="27.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvTipoDocumento" Width="1.5" PointX="38.75" PointY="9.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvTipoMov" Width="1.5" PointX="12" PointY="31.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvTipoProrrateo" Width="1.5" PointX="38.75" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.InvValoracion" Width="1.5" PointX="38.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.LugarTrabajo" Width="1.5" PointX="12" PointY="59.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Meses" Width="1.5" PointX="0.75" PointY="39.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Moneda" Width="1.5" PointX="39.75" PointY="21.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.MonedaDenominacion" Width="1.5" PointX="39.75" PointY="15.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.MovCaja" Width="1.5" PointX="9.75" PointY="70.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.MovimientoBanco" Width="1.5" PointX="11.25" PointY="34.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Multimoneda" Width="1.5" PointX="39.75" PointY="25.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.opcion" Width="1.5" PointX="9.75" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.OrdenarCompra" Width="1.5" PointX="5.25" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Paises" Width="1.5" PointX="39.75" PointY="28.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Parentezco" Width="1.5" PointX="9" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Parientes" Width="1.5" PointX="11.25" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PerfilDet" Width="1.5" PointX="12" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PerfilEnc" Width="1.5" PointX="9.75" PointY="23.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Periodo" Width="1.5" PointX="3" PointY="40.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PlanImpuesto" Width="1.5" PointX="0.75" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PlanXDetalleImpuesto" Width="1.5" PointX="3" PointY="14.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.POSTarjeta" Width="1.5" PointX="39.75" PointY="31.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PresupConfigDet" Width="1.5" PointX="15" PointY="20.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PresupConfigEnc" Width="1.5" PointX="12.75" PointY="11.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Presupuesto" Width="1.5" PointX="8.25" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Prioridad" Width="1.5" PointX="39.75" PointY="34.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ProgramaCxP" Width="1.5" PointX="18.75" PointY="47.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Proyecto" Width="1.5" PointX="5.25" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PuntoVenta" Width="1.5" PointX="5.25" PointY="72.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Ratio" Width="1.5" PointX="33.75" PointY="40.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.RetiroEmpleado" Width="1.5" PointX="5.25" PointY="52.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.rptFiltros" Width="1.5" PointX="39.75" PointY="37.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.rrhCargo" Width="1.5" PointX="40.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.rrhClaseEmpleado" Width="1.5" PointX="40.75" PointY="4.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.rrhEmpleado" Width="1.5" PointX="40.75" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SaldoBanco" Width="1.5" PointX="8.25" PointY="47.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SaldoCC" Width="1.5" PointX="11.25" PointY="46.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SaldoConta" Width="1.5" PointX="11.25" PointY="50.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SolicitudDet" Width="1.5" PointX="16.5" PointY="48.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SolicitudEnc" Width="1.5" PointX="19.25" PointY="34" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SolicitudExt" Width="1.5" PointX="21.5" PointY="32" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Status" Width="1.5" PointX="6" PointY="61.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Sucursal" Width="1.5" PointX="3" PointY="47.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Tarjeta" Width="1.5" PointX="40.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoAbono" Width="1.5" PointX="14.25" PointY="31.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoActividad" Width="1.5" PointX="41.75" PointY="14.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoActivo" Width="1.5" PointX="41.75" PointY="21.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoAhorro" Width="1.5" PointX="9" PointY="66" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoCredito" Width="1.5" PointX="6" PointY="64.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoCuenta" Width="1.5" PointX="4.5" PointY="30.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoExterno" Width="1.5" PointX="6" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoMovBanco" Width="1.5" PointX="9" PointY="57.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoMovCaja" Width="1.5" PointX="7.5" PointY="78.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoOrden" Width="1.5" PointX="41.75" PointY="24.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoPartida" Width="1.5" PointX="6.75" PointY="58" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoSucursal" Width="1.5" PointX="41.75" PointY="27.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoUsoOrden" Width="1.5" PointX="26.75" PointY="42.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Usuario" Width="1.5" PointX="12" PointY="22" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Filtro" Width="1.5" PointX="41.75" PointY="30.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FTLocks" Width="1.5" PointX="41.75" PointY="35.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.IvarptBase" Width="1.5" PointX="41.75" PointY="39.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.Lista" Width="1.5" PointX="39.75" PointY="42.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TipoMovIVA" Width="1.5" PointX="41.75" PointY="42.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwInvListaProductoPartes" Width="1.5" PointX="42.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwListaProductos" Width="1.5" PointX="43.75" PointY="7.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwrptCrmContacto" Width="1.5" PointX="43.75" PointY="17.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwrptCrmContactoDirecciones" Width="1.5" PointX="35.75" PointY="44.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwrptCrmContactoInformacionEco" Width="1.5" PointX="43.75" PointY="41.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.vwrptCrmContactoReferencias" Width="1.5" PointX="44.75" PointY="1.875" IsExpanded="true" />
+        <AssociationConnector Association="Model.FK_AccesoUsuario_Usuario" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Depreciacion_ActivoFijo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Asociacion_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Asociacion_CortePago" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CuentaBanco_Banco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_BanConciliacion_CuentaBanco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_BanConciliacion_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Catalogo_TipoCuenta" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CatalogoOpcion_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CatalogoxCatalogoCC_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CuentaBanco_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DiarioDet_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_EstResConfig_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_PresupConfigDet_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Presupuesto_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoConta_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_TipoAhorro_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_TipoCredito_Catalogo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CatalogoxCatalogoCC_CatalogoCC" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoCC_CatalogoCC" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CatalogoOpcion_opcion" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_Cliente_PlanImpuesto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoEnc_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanEnc_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DeudaExterna_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Deudor_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Inactivos_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_OrdenarCompra_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Parientes_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_Proyecto_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_RetiroEmpleado_Cliente" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CorteCaja_PuntoVenta" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_MovCaja_CorteCaja" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoEnc_CortePago" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CredNoEnc_CortePago" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Inactivos_CortePago" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudEnc_CortePago" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoDet_CreditoEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoDet_TipoAbono" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_CreditoEnc_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoEnc_Status" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoEnc_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_CreditoEnc_TipoCredito" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudDet_CreditoEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaColorProductoCampania" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaProductoCampania" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaSucursalCampania" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaTipoVenta" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaColorProductoColor" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaProdPartesCampania" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaProdPartesParte" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaProdRegaliaCampProd" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaProductoProducto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmCampaniaSucursalSucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoArchivos" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoDireccion" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoInformacionEco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoNivelEducacion" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoProfesion" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoReferencia" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoDireccionTipo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoDireccionVivienda" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoInformacionEcoTipo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmContactoReferenciaTipo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmMedioContactoTipo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_crmOportunidadTipoVenta" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_MovimientoBanco_CuentaBanco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoBanco_CuentaBanco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxcTransaccionesAplicadas_cxcTransacciones" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanDet_cxpQuedanEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanDet_DiarioEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanDet_Documento" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_ProgramaCxP_cxpQuedanDet" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanEnc_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpQuedanEnc_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_cxpTransaccionesAplicadas_cxpTransacciones" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_PlanXDetalleImpuesto_DetalleImpuesto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DeudaExterna_TipoExterno" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudExt_DeudaExterna" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Deudor_LugarTrabajo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudDet_Deudor" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudExt_Deudor" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DiarioDet_DiarioEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DiarioEnc_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_DiarioEnc_TipoPartida" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_Documento" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Periodo_Ejercicio" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProducto_InvClase" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProducto_InvClasif" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvExistencia_InvColor" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvDescDet_InvDescEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvDescDet_InvExistencia" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvDescEnc_PuntoVenta" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvExistencia_InvTalla" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvExistencia_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvFisDet_InvExistencia" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProductoPartes_InvExistencia" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvFisDet_InvFisEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvFisEnc_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvFisEnc_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProducto_InvGrupo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvListaPrecioDet_InvListaPrecioEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvListaPrecioEnc_InvProducto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvLoteDet_InvLote" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvProducto_InvMarca" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProducto_InvMedida" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvMovDet_InvMovEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvMovDet_InvProducto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvMovDetTalla_InvMovDet" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_InvTipoMov" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_InvMovEnc_Usuario" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Pago_TipoCredito" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvPlanUMDet_InvPlanUMEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_InvProducto_InvRubro" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_Periodo_Meses" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_MovCaja_TipoMovCaja" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_MovimientoBanco_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_MovimientoBanco_TipoMovBanco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Parientes_Parentezco" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Perfildet_Perfilenc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_usuario_perfilenc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_Presupuesto_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoBanco_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoCC_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SaldoConta_Periodo" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_PlanXDetalleImpuesto_PlanImpuesto" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_PresupConfigDet_PresupConfigEnc" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FK_PuntosVenta_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudEnc_Sucursal" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_SolicitudEnc_TipoCredito" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.fk_TipoMovBanco_TipoPartida" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

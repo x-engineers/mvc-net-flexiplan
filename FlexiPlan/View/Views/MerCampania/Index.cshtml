@@ -1,0 +1,1160 @@
+@using Blo.Properties
+@using Model;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var pasoFinal = 0;
+            var siguiente = true;
+            var enviar = false;
+            var limpiarWizard = false;
+            var editarProductos = false;
+            var grid;
+            var gridproductos;
+            var gridSucursal;
+
+
+            //Toolbar extra buttons
+            var btnFinish = $('<button id="btnFinal" type ="submit"></button>')
+                .text('Finalizar')
+                .addClass('btn btn-info')
+                .on('click', function () {
+                    if (pasoFinal == 2) {
+                        enviar = true;
+                        return true;
+                    }
+                    else {
+                        alert('Pasos pendientes');
+                        return false;
+                    }
+                });
+
+            var btnCancel = $('<a id="btnCancelar" href="javascript:void(0)"></a>')
+                .text('Cancelar')
+                .addClass('btn btn-danger')
+                .on('click', function () { Add(); limpiarWizard = true; });
+
+
+
+            // Smart Wizard
+            $('#smartwizard').smartWizard({
+                selected: 0,  // Initial selected step, 0 = first step
+                contentCache: false,
+                keyNavigation: false, // Enable/Disable keyboard navigation(left and right keys are used if enabled)
+                autoAdjustHeight: true, // Automatically adjust content height
+                cycleSteps: false, // Allows to cycle the navigation of steps
+                backButtonSupport: false, // Enable the back button support
+                useURLhash: false, // Enable selection of the step based on url hash
+                lang: {  // Language variables
+                    next: 'Siguiente',
+                    previous: 'Anterior'
+                },
+                toolbarSettings: {
+                    toolbarPosition: 'bottom', // none, top, bottom, both
+                    toolbarButtonPosition: 'right', // left, right
+                    showNextButton: true, // show/hide a Next button
+                    showPreviousButton: true, // show/hide a Previous button
+                    toolbarExtraButtons: [btnFinish, btnCancel]
+                },
+                anchorSettings: {
+                    anchorClickable: true, // Enable/Disable anchor navigation
+                    enableAllAnchors: false, // Activates all anchors clickable all times
+                    markDoneStep: true, // add done css
+                    enableAnchorOnDoneStep: true // Enable/Disable the done steps navigation
+                },
+                contentURL: null, // content url, Enables Ajax content loading. can set as data data-content-url on anchor
+                disabledSteps: [],    // Array Steps disabled
+                errorSteps: [],    // Highlight step with errors
+                theme: 'arrows',
+                transitionEffect: 'fade', // Effect on navigation, none/slide/fade
+                transitionSpeed: '400'
+            });
+
+            $("#smartwizard").on("leaveStep", function (e, anchorObject, stepNumber, stepDirection) {
+
+                $('#formCampania').formValidation('validate');
+                enviar = false;
+
+                return siguiente;
+            });
+            // Initialize the showStep event
+            $("#smartwizard").on("showStep", function (e, anchorObject, stepNumber, stepDirection) {
+
+                $('#formCampania').formValidation('validate');
+                pasoFinal = stepNumber;
+                enviar = false;
+
+                if (pasoFinal == 2) {
+
+                    if ($("#TipoDescuento").val() == "Valor") {
+                        $("#lblValorDescuento").text("Valor de Descuento $:");
+                    }
+                    else {
+                        $("#lblValorDescuento").text("Porcentaje de Descuento %:");
+                    }
+
+                    if ($('select[id="IdTipoVenta"] option:selected').text() == "Contado") {
+                        $("#TipoPrima").prop("disabled", true);
+                        $("#valorPrima").prop("disabled", true);
+                    }
+                    else {
+                        $("#TipoPrima").prop("disabled", false);
+                        $("#valorPrima").prop("disabled", false);
+                    }
+
+                    $.ajax({
+                        url: "../MerCampania/GetProductosClaseMarca", type: "POST",
+                        data: {
+                            idClase: $("#IdInvClaseProducto").val(),
+                            idMarca: $("#IdInvMarca").val(),
+                            idEstadoProducto: $("#IdInvEstadoProducto").val(),
+                            idNivelPrecio: $("#IdInvNivelPrecio").val()
+                        }
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#IdProducto option").remove();
+                            $.each(data, function (key, registro) {
+                                $("#IdProducto").append('<option value=' + registro.Id + '>' + registro.InvProductoDes + '</option>');
+                            });
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                            $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                        });
+
+                    $("#formCampania").formValidation('resetForm'); // Elimina las clases de validacion
+                    $("#btnFinal").show();
+                    //$("#btnCancelar").show();
+                }
+                else {
+                    $("#btnFinal").hide();
+                    //$("#btnCancelar").hide();
+                }
+
+
+            });
+
+            $("#btnFinal").hide();
+
+
+            //PERMITE LLENAR LOS CAMPOS CON SUS CORESPONDIENTES VALORES
+            function Edit(e) {
+                $('#smartwizard').smartWizard("reset");
+                $("#Id").val(e.data.record.Id);
+                $("#Codigo").val(e.data.record.Codigo);
+                $("#Nombre").val(e.data.record.Nombre);
+                $("#Descripcion").val(e.data.record.Descripcion);
+                $("#FechaInicio").val(formatDate(e.data.record.FechaInicio, 'dd/mm/yyyy'));
+                $("#FechaFinal").val(formatDate(e.data.record.FechaFinal, 'dd/mm/yyyy'));
+
+                $("#IdTipoVenta").val(e.data.record.IdTipoVenta);
+                $("#IdTipoVenta").change();
+                $("#IdInvEstadoProducto").val(e.data.record.IdInvEstadoProducto);
+                $("#IdInvEstadoProducto").change();
+                $("#IdInvNivelPrecio").val(e.data.record.IdInvNivelPrecio);
+                $("#IdInvNivelPrecio").change();
+                $("#TipoDescuento").val(e.data.record.TipoDescuento);
+                $("#TipoDescuento").change();
+                $("#IdInvClaseProducto").val(e.data.record.IdInvClaseProducto);
+                $("#IdInvClaseProducto").change();
+                $("#IdInvMarca").val(e.data.record.IdInvMarca);
+                $("#IdInvMarca").change();
+
+                $("#IdSucursales").selectpicker('val', e.data.record.IdSucursales);
+                $("#IdColores").selectpicker('val', e.data.record.IdColores);
+
+                $.ajax({
+                    url: "../MerCampania/GetProductosCampania", type: "POST",
+                        data: {
+                            IdCampania: $("#Id").val()
+                        }
+                    })
+                    .done(function (data, textStatus, jqXHR) {
+                        gridproductos.reload();
+                    })
+                   .fail(function (data, textStatus, jqXHR) {
+                    });
+
+                $("#myModal").modal("show");
+            }
+
+            function EditProdiuctos(e) {
+                editarProductos = true;
+                $("#IdCampaniaProducto").val(e.data.record.Id);
+                $("#IdProducto").val(e.data.record.IdProducto);
+                $("#IdProducto").change();
+                //metodo para gcargar los chasis que fueron seleccionados
+                $.ajax({
+                    url: "../MerCampania/GetDatosProdPartes", type: "POST",
+                    data: {
+                        idProducto: $("#IdProducto").val(),
+                        idColores: $("#IdColores").selectpicker('val')
+                    }
+                })
+                    .done(function (data, textStatus, jqXHR) {
+                        $('#idPartes').selectpicker("destroy");
+                        $("#idPartes option").remove();
+                        $.each(data.partes, function (key, registro) {
+                            $("#idPartes").append('<option value=' + registro.Id + '>' + registro.NumeroParte + '-' + registro.Anio + '</option>');
+                        });
+                        $('#idPartes').selectpicker({
+                            actionsBox: true,
+                            liveSearch: true,
+                            size: 6,
+                            selectAllText: "Todos",
+                            deselectAllText: "Ninguno",
+                            noneSelectedText: "Seleccione"
+                        });
+
+                        $("#idPartes").selectpicker('val', e.data.record.idPartes);
+                        $("#myModalProducto").modal("show");
+                    })
+                    .fail(function (data, textStatus, jqXHR) {
+                    });
+
+
+                $("#ExistenciaActual").val(e.data.record.ExistenciaActual);
+                $("#PrecioActual").val(e.data.record.PrecioActual);
+                $("#ValorDescuento").val(e.data.record.ValorDescuento);
+                $("#Garantia").val(e.data.record.Garantia);
+                $("#CantidadPromocion").val(e.data.record.CantidadPromocion);
+                $("#Cantidad").val(e.data.record.Cantidad);
+                $("#valorPrima").val(e.data.record.valorPrima);
+                $("#PrecioNuevo").val(e.data.record.PrecioNuevo);
+                $("#Kilometraje").val(e.data.record.Kilometraje);
+
+                 //combobox
+                $("#servicios").val(e.data.record.servicios);
+                $("#servicios").change();
+                $("#TipoPrima").val(e.data.record.TipoPrima);
+                $("#TipoPrima").change();
+                $("#PrimerCuota").val(e.data.record.PrimerCuota);
+                $("#PrimerCuota").change();
+                $("#accesorios").val(e.data.record.accesorios);
+                $("#accesorios").change();
+
+             if ($('select[id="IdTipoVenta"] option:selected').text() == "Contado") {
+                        $("#TipoPrima").prop("disabled", true);
+                        $("#valorPrima").prop("disabled", true);
+                    }
+                    else {
+                        $("#TipoPrima").prop("disabled", false);
+                        $("#valorPrima").prop("disabled", false);
+                }
+
+
+            }
+
+
+            //REALIZA LA LLAMADA A UN MODAL PARA UN NUEVO REGUISTRO
+            function Add() {
+
+                $('#smartwizard').smartWizard("reset");
+                $.post("../MerCampania/Limpiar", function (data) {
+                    gridproductos.reload();
+                });
+
+                $("#Id").val(""); //campo oculto
+                $("#Codigo").val("");
+                $("#Nombre").val("");
+                $("#Descripcion").val("");
+                $("#FechaInicio").val("");
+                $("#FechaFinal").val("");
+
+                $("#IdTipoVenta").val(1);
+                $("#IdTipoVenta").change();
+                $("#IdInvEstadoProducto").val(1);
+                $("#IdInvEstadoProducto").change();
+                $("#IdInvNivelPrecio").val("");
+                $("#IdInvNivelPrecio").change();
+                $("#TipoDescuento").val("Valor");
+                $("#TipoDescuento").change();
+                $("#IdInvClaseProducto").val("");
+                $("#IdInvClaseProducto").change();
+                $("#IdInvMarca").val("");
+                $("#IdInvMarca").change();
+
+                 // Combobox Multi-Selección
+                $("#IdSucursales").selectpicker('val', '');
+                $("#IdColores").selectpicker('val', '');
+
+
+                if (limpiarWizard) {
+                    limpiarWizard = false;
+                }
+
+                $("#formCampania").formValidation('resetForm'); // Elimina las clases de validacion
+                $("#myModal").modal("show");
+
+            }
+
+            function AddProducto() {
+                editarProductos = false;
+                $("#IdCampaniaProducto").val(""); //campos ocultos
+                //Texbox
+                $("#ExistenciaActual").val("");
+                $("#PrecioActual").val("");
+                $("#ValorDescuento").val("0");
+                $("#Garantia").val("0");
+                $("#CantidadPromocion").val("");
+                $("#valorPrima").val("0");
+                $("#PrecioNuevo").val("0");
+                $("#Kilometraje").val("0");
+                $("#Cantidad").val("0");
+                // Combobox
+                $("#IdProducto").val("");
+                $("#IdProducto").change();
+                $("#TipoPrima").val("Valor");
+                $("#TipoPrima").change();
+                $("#PrimerCuota").val("");
+                $("#PrimerCuota").change();
+                $("#servicios").val("");
+                $("#servicios").change();
+                $("#accesorios").val("");
+                $("#accesorios").change();
+                //Combobox Multi-selección   donde se destruye y se carga de nuevo todas las opciones
+                $('#idPartes').selectpicker("destroy");
+                $("#idPartes option").remove();
+                $('#idPartes').selectpicker({
+                    actionsBox: true,
+                    liveSearch: true,
+                    size: 6,
+                    selectAllText: "Todos",
+                    deselectAllText: "Ninguno",
+                    noneSelectedText: "Seleccione"
+                });
+
+
+                if ($('select[id="IdTipoVenta"] option:selected').text() == "Contado") {
+                    $("#TipoPrima").prop("disabled", true);
+                    $("#valorPrima").prop("disabled", true);
+                }
+                else {
+                    $("#TipoPrima").prop("disabled", false);
+                    $("#valorPrima").prop("disabled", false);
+                }
+
+                $("#myModalProducto").modal("show");
+            }
+
+
+
+            //EVENTO PARA ELIMINAR UN PRODUCTO
+            function RemoveProductos(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../MerCampania/RemoveProducto", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                gridproductos.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+
+            function Cancelar(e) {
+                bootbox.confirm("@PropertiesBlo.msgConfirmacion", function (result) {
+                    if (result) {
+                        $.ajax({ url: "../MerCampania/CancelarCampania", type: "POST", data: { id: e.data.record.Id } })
+                            .done(function (data, textStatus, jqXHR) {
+                                grid.reload();
+                                Mensajes(data.mensaje);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+                });
+            }
+            //EVENTO QUE PERMITE BUSCAR POR TODOS LOS CAMPOS
+            function Search() {
+                grid.reload({ page: 1, searchString: $("#txtBuscar").val() });
+            }
+
+            $('#txtBuscar').keypress(function (e) {
+                if (e.which == 13) {
+                    Search();
+                }
+            });
+
+            //EVENTOS DE BOTONES
+            $("#btnAgregarCampania").on("click", Add);
+            $("#btnAgregarDetalleModal").on("click", AddProducto);
+            $("#btnBuscar").on("click", Search);
+
+            $("#IdProducto").change(function () {
+                if ($("#IdProducto").val() > 0 && !editarProductos) {
+                    $.ajax({
+                        url: "../MerCampania/GetDatosProducto", type: "POST",
+                        data: {
+                            idProducto: $("#IdProducto").val(),
+                            idNivelPrecio: $("#IdInvNivelPrecio").val(),
+                            IdColores: $("#IdColores").selectpicker('val')
+                        }
+                    })
+                        .done(function (data, textStatus, jqXHR) {
+                            $("#ExistenciaActual").val(data.datos.Existencia);
+                            $("#PrecioActual").val(data.datos.Precio);
+                            $("#PrecioNuevo").val(data.datos.Precio);
+                            $("#CantidadPromocion").val(data.datos.Existencia);
+                            $('#idPartes').selectpicker("destroy");
+                            $("#idPartes option").remove();
+
+                            $.each(data.partes, function (key, registro) {
+                                $("#idPartes").append('<option value=' + registro.Id + '>' + registro.NumeroParte + '-' + registro.Anio + '</option>');
+                            });
+                            $('#idPartes').selectpicker({
+                                actionsBox: true,
+                                liveSearch: true,
+                                size: 6,
+                                selectAllText: "Todos",
+                                deselectAllText: "Ninguno",
+                                noneSelectedText: "Seleccione"
+                            });
+                        })
+                        .fail(function (data, textStatus, jqXHR) {
+                        });
+                }
+                editarProductos = false;
+            });
+
+            $("#ValorDescuento").keyup(function () {
+                var precio = $("#PrecioActual").val();
+                var descuento = $("#ValorDescuento").val();
+
+                //if (descuento > precio) {
+                //    $("#ValorDescuento").val(precio);
+                //    descuento = precio;
+                //}
+
+                if ($("#TipoDescuento").val() == "Valor") {
+                    $("#PrecioNuevo").val(precio - descuento);
+                }
+                else {
+                    $("#PrecioNuevo").val(precio - (precio * (descuento / 100)));
+                }
+
+            });
+
+            //AQUI SE ESTABLACEN LAS PROPIEDADES Y EVENTOS DEL GRID
+            grid = $("#gridCampania").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+
+                columns: [
+                    { field: "Codigo", title: "Código"},
+                    { field: "Nombre", title: "Nombre" },
+                    { field: "FechaInicio", title: "Fecha Inicio", type: 'date', format: 'dd/mm/yyyy' },
+                    { field: "FechaFinal", title: "Fecha Final", type: 'date', format: 'dd/mm/yyyy' },
+                    { field: "TipoVenta", title: "Tipo de Venta" },
+                    { title: "", field: "Edit", width: 42, type: "icon", icon: "glyphicon-pencil btn btn-default btn-xs", tooltip: "Editar", events: { "click": Edit } },
+                    { title: "", field: "Cancelar", width: 42, type: "icon", icon: "glyphicon glyphicon-minus btn btn-warning btn-xs", tooltip: "Cancelar Campaña", events: { "click": Cancelar } }
+                ],
+                pager: { enable: true, limit: 10, sizes: [5, 10, 20, 100] }
+            });
+
+            gridproductos = $("#gridproductos").grid({
+                uiLibrary: "bootstrap",
+                minWidth: 600,
+
+                columns: [
+
+                    { field: "CodigoProducto", title: "Código" },
+                    { field: "Producto", title: "Producto" },
+                    { field: "ValorDescuento", title: "Valor de Descuento" },
+                    { field: "CantidadPromocion", title: "Cantidad de Promoción" },
+                    { field: "PrecioNuevo", title: "Precio Nuevo" },
+
+                    { title: "", field: "Edit", width: 42, type: "icon", icon: "glyphicon-pencil btn btn-default btn-xs", tooltip: "Editar", events: { "click": EditProdiuctos } },
+                    { title: "", field: "Delete", width: 42, type: "icon", icon: "glyphicon-trash btn btn-danger btn-xs", tooltip: "Eliminar", events: { "click": RemoveProductos } }
+                ],
+                pager: { enable: true, limit: 5, sizes: [5, 10, 20, 100] }
+            });
+
+
+
+            //VALIDACIONES DEL FORMULARIO
+            //validacion del modal de modal campania
+            $('#formCampania').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    Codigo: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Nombre: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    Descripcion: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    FechaInicio: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            date: {
+                                format: '@PropertiesBlo.formatDate',
+                                message: '@PropertiesBlo.msgFechaInvalida'
+                            }
+                        }
+                    },
+                    FechaFinal: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            },
+                            date: {
+                                format: '@PropertiesBlo.formatDate',
+                                message: '@PropertiesBlo.msgFechaInvalida'
+                            }
+                        }
+                    },
+                    IdInvEstadoProducto: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdInvNivelPrecio: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdInvClaseProducto: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    }
+                }
+            })
+
+                .on('err.form.fv', function (e) {
+                    var $form = $(e.target),
+                        fv = $form.data('formValidation'),
+                        $invalidFields = fv.getInvalidFields();
+                    siguiente = false;
+                })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    siguiente = true;
+
+                    if (pasoFinal == 2 && enviar) {
+                        $.ajax({ url: $form.attr('action'), type: "POST", data: $form.serialize(), IdSucursales: $("#IdSucursales").selectpicker('val', ''), IdColores :$("#IdColores").selectpicker('val', '') })
+                            .done(function (data, textStatus, jqXHR) {
+                                enviar = false;
+                                $("#myModal").modal("hide");
+                                Mensajes(data.mensaje);
+                                grid.reload();
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $("#myModal").modal("hide");
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                    }
+
+                    if (!limpiarWizard)
+                        $("#formCampania").formValidation('resetForm'); // Elimina las clases de validacion
+
+                });
+
+
+            //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+            $('#myModal').on('hide.bs.modal', function () {
+                $('#formCampania').trigger("reset"); // Resetea los valores de todos campos
+                $("#formCampania").formValidation('resetForm'); // Elimina las clases de validacion
+            })
+
+
+            // validacion del modal de agregar productos
+            $('#formProducto').formValidation({
+                icon: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                fields: {
+                    IdProducto: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    IdArticuloPrincipal: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    valorPrima: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    TipoPrima: {
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    PrimerCuota:{
+                        validators: {
+                            notEmpty: {
+                                message: '@PropertiesBlo.msgRequerido'
+                            }
+                        }
+                    },
+                    CantidadPromocion: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    var Existencia = $("#ExistenciaActual").val();
+                                    if (parseInt(Existencia) < parseInt(value)) {
+                                        return {
+                                            valid: false,
+                                            message: 'La cantidad  excedida'
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    },
+                    ValorDescuento: {
+                        validators: {
+                            callback: {
+                                callback: function (value, validator) {
+                                    var precio = $("#PrecioActual").val();
+                                    if (parseInt(precio) < parseInt(value) ) {
+                                        return {
+                                            valid: false,
+                                            message: 'EL descuento excedido'
+                                        }
+                                    }
+                                    return true;
+                                }
+                            }
+                        }
+                    }//fin
+
+                }
+            })
+                //<<<<<FormValidation - Inicio de eventos de validacion>>>>>>>>>>
+                .on('success.field.fv', function (e, data) {
+                    var $parent = data.element.parents('.form-group');
+                    $parent.removeClass('has-success');
+                    data.element.data('fv.icon').hide();
+                })
+                .on('success.form.fv', function (e) {
+                    e.preventDefault();
+                    var $form = $(e.target);
+                    var bv = $form.data('formValidation');
+
+                    $("#PrecioNuevo").prop("disabled", false);
+                    $("#valorPrima").prop("disabled", false);
+                    $("#TipoPrima").prop("disabled", false);
+                    $("#PrecioActual").prop("disabled", false);
+                    $("#ExistenciaActual").prop("disabled", false);
+
+
+                    //Envio de datos
+                    $.ajax({
+                        url: $form.attr('action'), type: "POST",
+                            data: $form.serialize(),
+                            servicios: $("#servicios").val(),
+                            Kilometraje: $("#Kilometraje").val(),
+                            accesorios: $("#accesorios").val(),
+                            Cantidad: $("#Cantidad").val() })
+                            .done(function (data, textStatus, jqXHR) {
+                                $("#myModalProducto").modal("hide");
+                                Mensajes(data.mensaje);
+                                gridproductos.reload();
+                                $("#PrecioNuevo").prop("disabled", true);
+                                $("#valorPrima").prop("disabled", true);
+                                $("#TipoPrima").prop("disabled", true);
+                                $("#PrecioActual").prop("disabled", true);
+                                $("#ExistenciaActual").prop("disabled", true);
+                            })
+                            .fail(function (data, textStatus, jqXHR) {
+                                $("#myModalProducto").modal("hide");
+                                $().toastmessage('showErrorToast', "@PropertiesBlo.msgFallo");
+                            });
+                });
+
+
+                //AL CERRAR EL MODAL SE REESTABLECN LOS VALORES
+                $('#myModalProducto').on('hide.bs.modal', function () {
+                    $('#formProducto').trigger("reset"); // Resetea los valores de todos campos
+                    $("#formProducto").formValidation('resetForm'); // Elimina las clases de validacion
+                })
+
+                //SELECTS
+                $('#IdSucursales').selectpicker({
+                    actionsBox: true,
+                    liveSearch: true,
+                    size: 6,
+                    selectAllText: "Todos",
+                    deselectAllText: "Ninguno",
+                    noneSelectedText: "Seleccione"
+                });
+
+                $('#IdColores').selectpicker({
+                    actionsBox: true,
+                    liveSearch: true,
+                    size: 6,
+                    selectAllText: "Todos",
+                    deselectAllText: "Ninguno",
+                    noneSelectedText: "Seleccione"
+                });
+
+                //VALIDANDO RANGO DE FECHAS
+                $('#FechaInicio').datetimepicker({
+                    format: 'd/m/Y',
+                    onShow: function (ct) {
+                        this.setOptions({
+                            maxDate: $('#FechaFinal').val() ? $('#FechaFinal').val() : false,
+                            formatDate: 'd/m/Y'
+                        })
+                    },
+                    onChangeDateTime: function (dp, $input) {
+                        $('#formCampania').formValidation('revalidateField', 'FechaInicio');
+                        //$('#formOficio').formValidation('revalidateField', 'FECHA_RECIBIDO_UIF');
+                    },
+                    timepicker: false
+                });
+
+
+                $('#FechaFinal').datetimepicker({
+                    format: 'd/m/Y',
+                    onShow: function (ct) {
+                        this.setOptions({
+                            minDate: $('#FechaInicio').val() ? $('#FechaInicio').val() : false,
+                            formatDate: 'd/m/Y'
+                        })
+                    },
+                    onChangeDateTime: function (dp, $input) {
+                        $('#formCampania').formValidation('revalidateField', 'FechaFinal');
+                        //$('#formOficio').formValidation('revalidateField', 'FECHA_RECIBIDO_UIF');
+                    },
+                    timepicker: false
+                });
+       });
+    </script>
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        CAMPAÑA
+        <small>MERCADEO</small>
+    </h1>
+</section>
+
+<!-- Main content -->
+<section class="content" style="padding-top:0; padding-bottom:0; ">
+    <div class="box box-primary" style="margin-bottom:0; ">
+        <div class="box-body">
+
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="button" id="btnAgregarCampania" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                </div>
+
+                <div class="col-md-9 ">
+                    <div class="input-group pull-right">
+                        <input type="text" id="txtBuscar" class="form-control" placeholder="Buscar ...">
+                        <span class="input-group-btn">
+                            <button type="submit" id="btnBuscar" class="btn btn-primary"><span class='glyphicon glyphicon glyphicon-search'></span></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="table-responsive" style="overflow-y: hidden; ">
+                @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                <table id="gridCampania" data-source="@Url.Action("GetCampaniaActivas")"></table>
+            </div>
+        </div>
+    </div><!-- /.box -->
+</section><!-- /.content -->
+<!--MODALCAMPANIA-->
+<div id='myModal' class='modal fade custom-width in' data-backdrop="static">
+    <div class="modal-dialog" style="width :70%">
+        <form id="formCampania" action="/MerCampania/Save" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                    Campaña
+                </div>
+                <div class="panel-body">
+                    <input id="Id" type="hidden" name="Id" value="">
+                    <!-- SmartWizard html -->
+                    <div id="smartwizard">
+                        <ul>
+                            <li><a href="#step-1">Paso 1<br /><h5>Datos Generales</h5></a></li>
+                            <li><a href="#step-2">Paso 2<br /><h5>Configuración</h5></a></li>
+                            <li><a href="#step-3">Paso 3<br /><h5>Productos</h5></a></li>
+                        </ul>
+
+                        <div>
+
+                            <div id="step-1" class="">
+
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Código<span class="text-red">*</span>: </label>
+                                            <input type="text" name="Codigo" id="Codigo" class="form-control" placeholder="Codigo" maxlength="20">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Nombre<span class="text-red">*</span>: </label>
+                                            <input type="text" name="Nombre" id="Nombre" class="form-control" placeholder="Nombre" maxlength="60">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Tipo de Venta<span class="text-red">*</span>: </label>
+                                            <select class="form-control" name="IdTipoVenta" id="IdTipoVenta">
+                                                @foreach (crmTipoVenta item in ViewBag.tipoVenta)
+                                                {
+                                                    <option value=@item.Id>@item.Descripcion</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Estado del producto<span class="text-red">*</span>: </label>
+                                            <select class="form-control" name="IdInvEstadoProducto" id="IdInvEstadoProducto">
+                                                @foreach (InvEstadoProducto item in ViewBag.estadoProducto)
+                                                {
+                                                    <option value=@item.Id>@item.EstadoProductoDes</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha Inicio<span class="text-red">*</span>: </label>
+                                            <input class="form-control dpicker" id="FechaInicio" name="FechaInicio" type="text" value="">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Fecha Final<span class="text-red">*</span>: </label>
+                                            <input class="form-control dpicker" id="FechaFinal" name="FechaFinal" type="text" value="">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="control-label">Descripción<span class="text-red">*</span>: </label>
+                                            <textarea class="form-control" id="Descripcion" name="Descripcion" type="text" value="" rows="5" maxlength="300"></textarea>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div id="step-2" class="">
+                                <br />
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="TipoDescuento">Tipo de Descuento<span class="text-red">*</span>:</label>
+                                        <select id="TipoDescuento" name="TipoDescuento" class="form-control">
+                                            <option value="Valor" selected>Valor</option>
+                                            <option value="Porcentaje">Porcentaje </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Clase<span class="text-red">*</span>: </label>
+                                        <select class="form-control select2-single" name="IdInvClaseProducto" id="IdInvClaseProducto">
+                                            @foreach (InvClase item in ViewBag.clase)
+                                            {
+                                                <option value=@item.Id>@item.InvClaseDes</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Lista de Precio<span class="text-red">*</span>: </label>
+                                        <select class="form-control select2-single" name="IdInvNivelPrecio" id="IdInvNivelPrecio">
+                                            @foreach (InvNivelPrecio item in ViewBag.nivelPrecio)
+                                            {
+                                                <option value=@item.Id>@item.InvNivelPrecioDes</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Marca: </label>
+                                        <select class="form-control select2-single" name="IdInvMarca" id="IdInvMarca">
+                                            @foreach (InvMarca item in ViewBag.marca)
+                                            {
+                                                <option value=@item.Id>@item.InvMarcaDes</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="IdSucursales">Sucursales:</label>
+                                        <select id="IdSucursales" name="IdSucursales" class="form-control" multiple>
+                                            @foreach (Sucursal item in (List<Sucursal>)ViewBag.sucursales)
+                                            {
+                                                <option value=@item.Id>@item.SucursalDes</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="IdColores">Colores:</label>
+                                        <select id="IdColores" name="IdColores" class="form-control" multiple>
+                                            @foreach (InvColor item in (List<InvColor>)ViewBag.color)
+                                            {
+                                                <option value=@item.Id>@item.InvColorDes</option>
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="step-3" class="">
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <button type="button" id="btnAgregarDetalleModal" class="btn btn-primary pull-left"><span class='glyphicon glyphicon-plus'></span>@PropertiesBlo.btnNuevo</button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive" style="overflow-y: hidden; ">
+                                    @*Definicion de tabla y origen da datos (Metodo del controller)*@
+                                    <table id="gridproductos" data-source="@Url.Action("GetProductos")"></table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCerrar</button>
+                    @*<input type="submit" id="btnGuardarCampania" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">*@
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+<!--MODAL PRODUCTOS-->
+<div id='myModalProducto' class='modal fade' data-backdrop="static">
+    <div class="modal-dialog" style="width :50%">
+
+        <form id="formProducto" action="/MerCampania/AgregarProducto" method="post">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    Agregar producto
+                </div>
+                <div class="panel-body">
+                    <input id="IdCampaniaProducto" type="hidden" name="Id" value="">
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Producto<span class="text-red">*</span>: </label>
+                            <select class="form-control select2-single" name="IdProducto" id="IdProducto"></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Existencia Actual: </label>
+                            <input class="form-control numeric" id="ExistenciaActual" name="ExistenciaActual" type="text" disabled>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Precio Actual: </label>
+                            <input class="form-control decimal" id="PrecioActual" name="PrecioActual" type="text" value="" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" id="lblValorDescuento">Valor de Descuento: </label>
+                            <input class="form-control decimal" id="ValorDescuento" name="ValorDescuento" type="text" value="" maxlength="9">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Meses de Garantía: </label>
+                            <input class="form-control numeric" id="Garantia" name="Garantia" type="text" maxlength="2">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Cantida de Promoción<span class="text-red">*</span>: </label>
+                            <input class="form-control numeric" id="CantidadPromocion" name="CantidadPromocion" type="text" value="" maxlength="9">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Tipo de Prima<span class="text-red">*</span>: </label>
+                            <select id="TipoPrima" name="TipoPrima" class="form-control" disabled>
+                                <option value="Valor" selected>Valor</option>
+                                <option value="Porcentaje">Porcentaje </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Valor de Prima: </label>
+                            <input class="form-control decimal" id="valorPrima" name="valorPrima" type="text" value="" maxlength="9" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Precio Nuevo: </label>
+                            <input class="form-control decimal" id="PrecioNuevo" name="PrecioNuevo" type="text" value="" disabled>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label for="idPartes">Chasis:</label>
+                            <select id="idPartes" name="idPartes" class="form-control" multiple></select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">1° Cuota (Cantidad de meses): </label>
+                            <select id="PrimerCuota" name="PrimerCuota" class="form-control">
+                                <option value="1">1</option>
+                                <option value="2">2 </option>
+                                <option value="3">3 </option>
+                                <option value="4">4 </option>
+                                <option value="5">5 </option>
+                                <option value="6">6 </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <br />
+                    </div>
+              
+                    <div class="col-md-12">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Regalías</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label class="control-label">Lista de Servicios: </label>
+                                        <select class="form-control select2-single" name="servicios" id="servicios">
+                                            @foreach (InvProducto item in (List<InvProducto>)ViewBag.servicios)
+                                            {
+                                                <option value=@item.Id>@item.InvProductoDes</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Cantida de Kilometraje: </label>
+                                        <input class="form-control numeric" id="Kilometraje" name="Kilometraje" type="text" value="" maxlength="9">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label class="control-label">Lista de Accesorios: </label>
+                                        <select class="form-control select2-single" name="accesorios" id="accesorios">
+                                            @foreach (InvProducto item in (List<InvProducto>)ViewBag.accesorios)
+                                            {
+                                                <option value=@item.Id>@item.InvProductoDes</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="control-label">Cantida de Accesorios: </label>
+                                        <input class="form-control numeric" id="Cantidad" name="Cantidad" type="text" value="" maxlength="9">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="panel-footer text-right">
+                    <button class="btn btn-default" data-dismiss="modal">@PropertiesBlo.btnCancelar</button>
+                    <input type="submit" id="btnGuardarproducto" value="@PropertiesBlo.btnGuardar" class="btn btn-primary">
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
